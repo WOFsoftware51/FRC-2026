@@ -15,6 +15,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.RobotState;
 
 public class VisionIOSim implements VisionIO {
@@ -26,9 +27,11 @@ public class VisionIOSim implements VisionIO {
     PhotonCamera camera = new PhotonCamera("Turret");
     PhotonCameraSim cameraSim = new PhotonCameraSim(camera, cameraProperties);
 
+    Transform3d transform = new Transform3d(RobotState.getInstance().getRobotToLimelight().getTranslation(), RobotState.getInstance().getRobotToLimelight().getRotation());
+
     PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(
         tagLayout, 
-        RobotState.getInstance().getRobotToLimelight()
+        transform
     );
 
     public VisionIOSim() {
@@ -38,17 +41,20 @@ public class VisionIOSim implements VisionIO {
         cameraProperties.setFPS(50);
         
         visionSim.addAprilTags(tagLayout);
-        visionSim.addCamera(cameraSim, RobotState.getInstance().getRobotToLimelight());
+        visionSim.addCamera(cameraSim, transform);
 
         poseEstimator.setPrimaryStrategy(PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR);
     }
+    
     
     @Override
     public void updateInputs(VisionIOInputs inputs) {
         visionSim.update(RobotState.getInstance().getPose2d());
 
-        visionSim.adjustCamera(cameraSim, RobotState.getInstance().getRobotToLimelight());
-        poseEstimator.setRobotToCameraTransform(RobotState.getInstance().getRobotToLimelight());
+        transform = new Transform3d(RobotState.getInstance().getRobotToLimelight().getTranslation(), RobotState.getInstance().getRobotToLimelight().getRotation());
+
+        visionSim.adjustCamera(cameraSim, transform);
+        poseEstimator.setRobotToCameraTransform(transform);
 
         PhotonPipelineResult result = camera.getLatestResult();
         Optional<EstimatedRobotPose> estimatedPose = poseEstimator.update(result);

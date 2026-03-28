@@ -15,6 +15,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -40,6 +41,10 @@ public class RobotState {
     private Pose2d turretLimelightPose2d = new Pose2d();
     private Pose2d turretLimelightMegaTag2 = new Pose2d();
 
+    private Pose2d chassisLimelightMegaTag2 = new Pose2d();
+
+    private double hubToTurret;
+
     private Translation3d robotToTurreTranslation3d = 
         new Translation3d(
             Inches.of(-5.5), 
@@ -56,23 +61,28 @@ public class RobotState {
         )
     );
 
+    private Pose3d rotatedTurret = new Pose3d();
+    private Rotation3d rotatedAngle = new Rotation3d();
+
     private Transform3d turretToLimelight = new Transform3d(
         new Translation3d(  //TODO
             Inches.of(6.58), 
             Inches.of(0), 
-            Inches.of(-4.8)
+            Inches.of(4.8)
         ),
         new Rotation3d(  //TODO
             Degrees.of(0), 
-            Degrees.of(15), 
+            Degrees.of(14.5), 
             Degrees.of(0)
         )
     );
     
-    private Transform3d robotToLimelight = new Transform3d();
+    private Pose3d robotToLimelight = new Pose3d();
 
     private double mt1TimeStamp;
-    private double mt2TimeStamp;
+    private double mt2TimeStampTurret;
+
+    private double mt2TimeStampChassis;
 
     private RobotState() {
     
@@ -155,15 +165,17 @@ public class RobotState {
         double yError = Constants.PoseConstants.kCurrentAllianceHubTarget.get().getY() - getPose2d().getY();
         double xError = Constants.PoseConstants.kCurrentAllianceHubTarget.get().getX() - getPose2d().getX();
         Angle angleRadians = Radians.of(Math.atan2(yError,xError));
-        double angleDegrees = angleRadians.in(Degree)-90;
+        double angleDegrees = angleRadians.in(Degree) - 90;
+        return Degrees.of(angleDegrees);
+    }
+    public Angle getRobotToAllianceHubDegrees(Pose2d pose) {
+        double yError = Constants.PoseConstants.kCurrentAllianceHubTarget.get().getY() - pose.getY();
+        double xError = Constants.PoseConstants.kCurrentAllianceHubTarget.get().getX() - pose.getX();
+        Angle angleRadians = Radians.of(Math.atan2(yError,xError));
+        double angleDegrees = angleRadians.in(Degree) - 90;
         return Degrees.of(angleDegrees);
     }
 
-    /**
-     * Error from the front of the robot to the hub
-     * 
-     * @return Angle in Degrees
-     */
     public Angle getTurretToAllianceHubDegrees() {
         
         Translation2d transform = new Translation2d(Inches.of(-7.75).in(Meters), Inches.of(5.5).in(Meters));
@@ -182,7 +194,7 @@ public class RobotState {
     }
 
     public void setChassisSpeeds(ChassisSpeeds robotChassisSpeeds, ChassisSpeeds fieldRelativeChassisSpeeds) {
-        robotChassisSpeeds = this.robotChassisSpeeds;
+        this.robotChassisSpeeds = robotChassisSpeeds;
         fieldRelativeChassisSpeeds = this.fieldRelativeChassisSpeeds;
     }
     public ChassisSpeeds getChassisSpeeds() {
@@ -198,6 +210,13 @@ public class RobotState {
     }
     public Pose2d getTurretLimelightPose2d() {
         return turretLimelightPose2d;
+    }
+
+    public void setChassisLimelightPose2d(Pose2d pose2d) {
+        this.chassisLimelightMegaTag2 = pose2d;
+    }
+    public Pose2d getChassisLimelightPose2d() {
+        return chassisLimelightMegaTag2;
     }
 
     
@@ -246,13 +265,20 @@ public class RobotState {
 
     public void setLimelightTurretTimeStamp(double mt1Latency, double mt2Latency) {
         this.mt1TimeStamp = mt1Latency;
-        this.mt2TimeStamp = mt2Latency;
+        this.mt2TimeStampTurret = mt2Latency;
     }
     public double getMegaTag1TimeStamp() {
         return mt1TimeStamp;
     }
-    public double getMegaTag2TimeStamp() {
-        return mt2TimeStamp;
+    public double getMegaTag2TimeStampTurret() {
+        return mt2TimeStampTurret;
+    }
+
+    public void setLimelightChassisTimeStamp(double mt2Latency) {
+        this.mt2TimeStampChassis = mt2Latency;
+    }
+    public double getMegaTag2TimeStampChassis() {
+        return mt2TimeStampChassis;
     }
 
     public void setRobotToTurret(double turretYawDegrees) {
@@ -261,15 +287,22 @@ public class RobotState {
             new Rotation3d(  //TODO
                 Degrees.of(0), 
                 Degrees.of(0), 
-                Degrees.of(180)
+                Degrees.of(90)
             )
         );
+
+        rotatedAngle = new Rotation3d(Degrees.of(0), Degrees.of(0), Degrees.of(turretYawDegrees));
+        rotatedTurret = new Pose3d(robotToTurret.getTranslation(), robotToTurret.getRotation().plus(rotatedAngle));
+
     }
-    public Transform3d getRobotToTurret() {
-        return robotToTurret;
+
+    public Pose3d getRobotToTurret() {
+        return rotatedTurret;
     }
 
     public Transform3d getTurretToLimelight(){
+        // var a = new Pose3d(turretToLimelight.getTranslation(), turretToLimelight.getRotation()).rotateBy(rotatedAngle);
+        // var done = new Transform3d(a.getTranslation(), a.getRotation());
         return turretToLimelight;
     }
 
@@ -278,7 +311,7 @@ public class RobotState {
         robotToLimelight = getRobotToTurret().plus(getTurretToLimelight());
     }
 
-    public Transform3d getRobotToLimelight() {
+    public Pose3d getRobotToLimelight() {
         return robotToLimelight;
     }
 
@@ -295,5 +328,13 @@ public class RobotState {
         Logger.recordOutput("RobotState/getDistanceFromHubMeters", distance);
 
         return distance;
+    }
+
+    public void setHubToTurret(double distance) {
+        this.hubToTurret = distance;
+    }
+
+    public double getHubToTurret() {
+        return this.hubToTurret;
     }
 }

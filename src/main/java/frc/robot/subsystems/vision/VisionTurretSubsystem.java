@@ -9,6 +9,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -63,7 +64,7 @@ public class VisionTurretSubsystem extends SubsystemBase {
 
 
     cameraPose2d = LimelightHelpers.getBotPose3d_wpiBlue(Constants.VisionConstants.kTurretLimelight);
-    cameraPose2d.transformBy(RobotState.getInstance().getRobotToLimelight().inverse());
+    cameraPose2d.transformBy(new Transform3d(RobotState.getInstance().getRobotToLimelight().getTranslation(), RobotState.getInstance().getRobotToLimelight().getRotation()).inverse());
 
     if(inputs.tv){
       RobotState.getInstance().setTurretLimelightPose2d(visionPose);

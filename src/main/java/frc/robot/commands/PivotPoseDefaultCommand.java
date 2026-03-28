@@ -5,16 +5,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.pivot.PivotSubsystem;
+import frc.robot.subsystems.hood.HoodSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PivotPoseDefaultCommand extends Command {
   /** Creates a new PivotPoseDefaultCommand. */
-  private PivotSubsystem pivot;
+  private HoodSubsystem hood;
 
-  public PivotPoseDefaultCommand(PivotSubsystem pivot) {
+  public PivotPoseDefaultCommand(HoodSubsystem pivot) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.pivot = pivot;
+    this.hood = pivot;
 
     addRequirements(pivot);
 
@@ -28,7 +28,7 @@ public class PivotPoseDefaultCommand extends Command {
   @Override
   public void execute() {
     // pivot.runToDistanceFromHub();
-    pivot.runToPosition();
+    hood.runToPosition();
   }
 
   // Called once the command ends or is interrupted.

@@ -1,9 +1,11 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -28,7 +30,10 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -46,6 +51,7 @@ import frc.robot.RobotState;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.subsystems.vision.LimelightHelpers;
+import frc.robot.subsystems.vision.VisionChassisSubsystem;
 import frc.robot.subsystems.vision.VisionTurretSubsystem;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.sim.MapleSimSwerveDrivetrain;
@@ -62,6 +68,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
     private VisionTurretSubsystem limelightTurret;
+    private VisionChassisSubsystem limelightChassis;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -86,8 +93,10 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     LoggedTunableNumber n3 = new LoggedTunableNumber("PoseVisionMatrix/gyro", Double.MAX_VALUE);
 
 
-    private double visionTimeStamp;
-    private Matrix<N3, N1> visionSTDMatrix = VecBuilder.fill(n1.get(), n2.get(), n3.get());
+    private double visionTimeStampTurret;
+    private double visionTimeStampChassis;
+    private Matrix<N3, N1> visionSTDMatrixTurret = VecBuilder.fill(0.5, 0.5, Double.MAX_VALUE);
+    private Matrix<N3, N1> visionSTDMatrixChassis = VecBuilder.fill(n1.get(), n2.get(), n3.get());
     // private Matrix<N3, N1> visionSTDMatrix = VecBuilder.fill();
 
     // LimelightHelpers.LimelightResults turretLimelightResults = LimelightHelpers.getLatestResults(Constants.VisionConstants.kTurretLimelight);
@@ -98,7 +107,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private Field2d field2d = new Field2d();
 
 
-
+    private Pose3d testCameraPose;
+    
     @Override
     public void periodic() {
         // turretLimelightResults = LimelightHelpers.getLatestResults(Constants.VisionConstants.kTurretLimelight);
@@ -119,12 +129,24 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                 m_hasAppliedOperatorPerspective = true;
         }
 
-        // visionTimeStamp = robotState.getMegaTag1TimeStamp();
-        visionTimeStamp = robotState.getMegaTag2TimeStamp();
+        // visionTurretTimeStamp = robotState.getMegaTag1TimeStamp();
+        visionTimeStampTurret = robotState.getMegaTag2TimeStampTurret();
+        visionTimeStampChassis = robotState.getMegaTag2TimeStampChassis();
 
         LimelightHelpers.SetRobotOrientation(
             Constants.VisionConstants.kTurretLimelight, 
-            MathUtil.inputModulus(getState().Pose.getRotation().getDegrees(), 0, 360),
+            // MathUtil.inputModulus(getState().Pose.getRotation().getDegrees(), 0, 360),
+            getState().Pose.getRotation().getDegrees(),
+            RadiansPerSecond.of(getState().Speeds.omegaRadiansPerSecond).in(DegreesPerSecond), 
+            0,
+            0, 
+            0, 
+            0
+        );
+        LimelightHelpers.SetRobotOrientation(
+            Constants.VisionConstants.kChassisLimelight, 
+            // MathUtil.inputModulus(getState().Pose.getRotation().getDegrees(), 0, 360),
+            getState().Pose.getRotation().getDegrees(),
             RadiansPerSecond.of(getState().Speeds.omegaRadiansPerSecond).in(DegreesPerSecond), 
             0,
             0, 
@@ -132,35 +154,55 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             0
         );
 
+        LimelightHelpers.setCameraPose_RobotSpace(
+            Constants.VisionConstants.kTurretLimelight, 
+            robotState.getRobotToLimelight().getMeasureX().in(Meters), 
+            -robotState.getRobotToLimelight().getMeasureY().in(Meters), 
+            robotState.getRobotToLimelight().getMeasureZ().in(Meters), 
+            0,
+            Radians.of(robotState.getRobotToLimelight().getRotation().getY()).in(Degrees),
+            Radians.of(robotState.getRobotToLimelight().getRotation().getZ()).in(Degrees)    
+        );
         // LimelightHelpers.setCameraPose_RobotSpace(
-        //     Constants.VisionConstants.kTurretLimelight, 
-        //     robotState.getRobotToLimelight().getMeasureX().in(Meters), 
-        //     robotState.getRobotToLimelight().getMeasureY().in(Meters), 
-        //     robotState.getRobotToLimelight().getMeasureZ().in(Meters), 
-        //     0,
-        //     Radians.of(robotState.getRobotToLimelight().getRotation().getY()).in(Degrees),
-        //     Radians.of(robotState.getRobotToLimelight().getRotation().getZ()).in(Degrees)    
+        //     Constants.VisionConstants.kChassisLimelight, 
+        //     Inches.of(-4.98 + 0).in(Meters), 
+        //     Inches.of(-14.16).in(Meters), 
+        //     Inches.of(13.44).in(Meters), 
+        //     -2,
+        //     15,
+        //     90
         // );
+
 
 
 
         boolean didItWork = false;
   
-        if(limelightTurret.inputs.tv) {
+        // if(limelightTurret.inputs.tv) {
+        //     addVisionMeasurement(
+        //         robotState.getTurretLimelightMegaTag2(), 
+        //         // robotState.getTurretLimelightPose2d(), 
+        //         visionTimeStamp,
+        //         visionSTDMatrix
+        //     );
+        //     didItWork = true;
+        // }
+
+        if(limelightChassis.inputs.tv) {
             addVisionMeasurement(
-                robotState.getTurretLimelightMegaTag2(), 
-                // robotState.getTurretLimelightPose2d(), 
-                visionTimeStamp,
-                visionSTDMatrix
+                robotState.getChassisLimelightPose2d(),
+                visionTimeStampChassis,
+                visionSTDMatrixChassis
             );
             didItWork = true;
         }
+
         robotState.setPose2d(
             Robot.isReal() ? getState().Pose : mapleSimSwerveDrivetrain.mapleSimDrive.getSimulatedDriveTrainPose()
         );
         
 
-
+        
         if(
             kP.hasChanged(kP.hashCode()) ||
             kI.hasChanged(kI.hashCode()) ||
@@ -195,7 +237,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         );
         
         robotState.setChassisSpeeds(getState().Speeds, fieldRelativeChassisSpeeds);
-
+        Logger.recordOutput("Swerve/AngularSpeeds", getState().Speeds.omegaRadiansPerSecond);
 
         field2d.setRobotPose(robotState.getPose2d());
 
@@ -208,6 +250,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         Logger.recordOutput("RobotState/ChassisSpeeds/omegaRadiansPerSecond", robotState.getChassisSpeeds().omegaRadiansPerSecond);
         Logger.recordOutput("RobotState/DistanceFromHub", robotState.getDistanceFromHubMeters());
 
+        Logger.recordOutput("RobotState/RotatedTurret", robotState.getRobotToLimelight());
+
         Logger.recordOutput("Swerve/didItWork???", didItWork);
 
         Logger.recordOutput("Pose/testConfigsChanged", testConfigsChanged);
@@ -216,8 +260,9 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             Logger.recordOutput("Drive/SimulationPose", mapleSimSwerveDrivetrain.mapleSimDrive.getSimulatedDriveTrainPose());
         }
 
+        testCameraPose = new Pose3d(robotState.getPose2d()).plus(new Transform3d(robotState.getRobotToLimelight().getTranslation(), robotState.getRobotToLimelight().getRotation()));
 
-        Logger.recordOutput("Limelight Transform", robotState.getRobotToLimelight());
+        Logger.recordOutput("Limelight Transform", testCameraPose);
     }
 
     
@@ -256,6 +301,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     public Swerve(
         SwerveDrivetrainConstants drivetrainConstants,
         VisionTurretSubsystem turretLimelight,
+        VisionChassisSubsystem chassisLimelight,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(
@@ -266,6 +312,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             startSimThread();
         }
         this.limelightTurret = turretLimelight;
+        this.limelightChassis = chassisLimelight;
 
         if(!Robot.isReal()){
             mapleSimSwerveDrivetrain.mapleSimDrive.setSimulationWorldPose(new Pose2d(2.5, 4, new Rotation2d()));
@@ -297,7 +344,6 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                 this // Reference to this subsystem to set requirements
             );
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } 
         
@@ -310,6 +356,16 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             Inches.of(20.89).in(Meters), 
             0,
             15-1,
+            90
+        );
+
+        LimelightHelpers.setCameraPose_RobotSpace(
+            Constants.VisionConstants.kChassisLimelight, 
+            Inches.of(-4.98 + 0).in(Meters), 
+            Inches.of(-14.16).in(Meters), 
+            Inches.of(13.44).in(Meters), 
+            -2,
+            15,
             90
         );
 

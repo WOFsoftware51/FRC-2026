@@ -4,7 +4,9 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
@@ -22,7 +24,7 @@ public class TurretIOSim implements TurretIO {
     private final DCMotorSim sim = new DCMotorSim(
         LinearSystemId.createDCMotorSystem(
             DCMotor.getKrakenX44(1), 
-            0.1,
+            0.001,
             Constants.TurretConstants.kGearRatio
         ),
         DCMotor.getKrakenX44(1)
@@ -37,26 +39,36 @@ public class TurretIOSim implements TurretIO {
     MotionMagicVoltage motion = new MotionMagicVoltage(0);
 
     public TurretIOSim() {
-        configs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        configs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        configs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = forwardLimit;
-        configs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = reverseLimit;
+    configs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    configs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    configs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = forwardLimit;
+    configs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = reverseLimit;
 
-        configs.MotionMagic.MotionMagicCruiseVelocity = 90;
-        configs.MotionMagic.MotionMagicAcceleration = 400;
+    configs.MotionMagic.MotionMagicCruiseVelocity = 60;
+    configs.MotionMagic.MotionMagicAcceleration = 300;
 
-        configs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        
-        configs.Slot0.kP = 0.2;
-        configs.Slot0.kI = 0.0;
-        configs.Slot0.kD = 0.12;
-        configs.Slot0.kS = 0.03;
-        configs.Slot0.kV = 0.105;
-        configs.Slot0.kA = 0.0;
-        
-        // configs.MotorOutput.
-        
-        motor.getConfigurator().apply(configs);
+    configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+    configs.Slot0.kP = 1.0;
+    configs.Slot0.kI = 0.0;
+    configs.Slot0.kD = 0.05;
+    configs.Slot0.kS = 0.9;
+    configs.Slot0.kV = 0.094;
+    configs.Slot0.kA = 0.0;
+
+    configs.ClosedLoopGeneral.ContinuousWrap = false;
+    
+    configs.MotorOutput.withInverted(InvertedValue.CounterClockwise_Positive);
+
+    configs.CurrentLimits.StatorCurrentLimit = 35;
+    configs.CurrentLimits.StatorCurrentLimitEnable = false;
+    configs.CurrentLimits.SupplyCurrentLimit = 10;
+    configs.CurrentLimits.SupplyCurrentLimitEnable = false;
+
+    motor.getConfigurator().apply(configs);
+
+    // resetEncoder();
+    
     }
 
 
@@ -97,29 +109,36 @@ public class TurretIOSim implements TurretIO {
         
     }
 
-    @Override
-    public void runVolts(Voltage volts) {
-        double clampedEffort = MathUtil.clamp(volts.in(Volts), -12, 12);
-        motor.setVoltage(clampedEffort);
-    }
+  
+  @Override
+  public void runVolts(Voltage volts) {
+    double clampedEffort = MathUtil.clamp(volts.in(Volts), -12, 12);
+    motor.setControl(new VoltageOut(clampedEffort).withEnableFOC(true));
+  }
+  
+  @Override
+  public void runSetpoint(Angle degrees) {
+    double target = (degrees.in(Rotations))*Constants.TurretConstants.kGearRatio;
+    this.motion.withPosition(target).withEnableFOC(true).withFeedForward(0);
+    motor.setControl(motion);
+  }
 
-    @Override
-    public void runSetpoint(Angle degrees) {
-        target = (degrees.in(Rotations))*Constants.TurretConstants.kGearRatio;
-        this.motion.Position = target;
-        motor.setControl(motion);
-    }
-
-    @Override
-    public void stop() {
-        runVolts(Volts.zero());
-    }
-
-
-    @Override
-    public void resetEncoder() {
-        motor.setPosition(0);
-    }
-
-    
+  private double springFix() {
+    double constant = 8;
+    return 1;
+  }
+  
+  
+  @Override
+  public void stop() {
+    runVolts(Volts.zero());
+  }
+  
+  
+  @Override
+  public void resetEncoder() {
+    motor.setPosition(0);
+  }
+  
+     
 }

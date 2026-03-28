@@ -1,4 +1,4 @@
-package frc.robot.subsystems.pivot;
+package frc.robot.subsystems.hood;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -17,30 +17,30 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
-public class PivotIOSim implements PivotIO {
-    private TalonFX motor = new TalonFX(Constants.PivotConstants.kMotorID, Constants.kCANIvoreName);
+public class HoodIOSim implements HoodIO {
+    private TalonFX motor = new TalonFX(Constants.HoodConstants.kMotorID, Constants.kCANIvoreName);
     private TalonFXSimState motorSim = motor.getSimState();
 
     private DCMotorSim sim = new DCMotorSim(
         LinearSystemId.createDCMotorSystem(
             DCMotor.getKrakenX44(1), 
             0.01, 
-            Constants.PivotConstants.kGearRatio
+            Constants.HoodConstants.kGearRatio
         ), 
         DCMotor.getKrakenX44(1)
     );
 
     private TalonFXConfiguration configs = new TalonFXConfiguration();
   
-    private double forwardLimit = (Constants.PivotConstants.kForwardLimit/360.0)*Constants.PivotConstants.kGearRatio;
-    private double reverseLimit = (Constants.PivotConstants.kReverseLimit/360.0)*Constants.PivotConstants.kGearRatio;
+    private double forwardLimit = (Constants.HoodConstants.kForwardLimit/360.0)*Constants.HoodConstants.kGearRatio;
+    private double reverseLimit = (Constants.HoodConstants.kReverseLimit/360.0)*Constants.HoodConstants.kGearRatio;
 
 
     MotionMagicVoltage motion = new MotionMagicVoltage(0);
     double target = 0;
 
 
-    public PivotIOSim() {
+    public HoodIOSim() {
         configs.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
         configs.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
         configs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = forwardLimit;
@@ -67,29 +67,28 @@ public class PivotIOSim implements PivotIO {
     }
 
     @Override
-    public void updateInputs(PivotIOInputs inputs) {
+    public void updateInputs(HoodIOInputs inputs) {
         motorSim.setSupplyVoltage(12);
         double volts = motorSim.getMotorVoltage();
         sim.setInputVoltage(volts);
 
         sim.update(0.02);
-        double pivotDegrees = sim.getAngularPosition().in(Degree);
-        double pivotDegPerSec = sim.getAngularVelocity().in(DegreesPerSecond);
-        double pivotDegPerSecPerSec = sim.getAngularAcceleration().in(DegreesPerSecondPerSecond);
+        double hoodDegrees = sim.getAngularPosition().in(Degree);
+        double hoodDegPerSec = sim.getAngularVelocity().in(DegreesPerSecond);
+        double hoodDegPerSecPerSec = sim.getAngularAcceleration().in(DegreesPerSecondPerSecond);
 
-        double rotorRotations = Degrees.of(pivotDegrees).in(Rotations) * Constants.PivotConstants.kGearRatio;
-        double rotorRotationsPerSecond = DegreesPerSecond.of(pivotDegPerSec).in(RotationsPerSecond) * Constants.PivotConstants.kGearRatio;
-        double rotorRotationsPerSecondPerSecond = DegreesPerSecondPerSecond.of(pivotDegPerSec).in(RotationsPerSecondPerSecond) * Constants.PivotConstants.kGearRatio;
+        double rotorRotations = Degrees.of(hoodDegrees).in(Rotations) * Constants.HoodConstants.kGearRatio;
+        double rotorRotationsPerSecond = DegreesPerSecond.of(hoodDegPerSec).in(RotationsPerSecond) * Constants.HoodConstants.kGearRatio;
+        double rotorRotationsPerSecondPerSecond = DegreesPerSecondPerSecond.of(hoodDegPerSec).in(RotationsPerSecondPerSecond) * Constants.HoodConstants.kGearRatio;
 
         motorSim.setRawRotorPosition(rotorRotations);
         motorSim.setRotorVelocity(rotorRotationsPerSecond);
         motorSim.setRotorAcceleration(rotorRotationsPerSecondPerSecond);
 
-        inputs.position.mut_replace(pivotDegrees, Degrees);
-        inputs.targetPosition.mut_replace(target/360, Degrees);
+        inputs.position.mut_replace(hoodDegrees, Degrees);
         
-        inputs.velocity.mut_replace(pivotDegPerSec, DegreesPerSecond);
-        inputs.acceleration.mut_replace(pivotDegPerSecPerSec, DegreesPerSecondPerSecond);
+        inputs.velocity.mut_replace(hoodDegPerSec, DegreesPerSecond);
+        inputs.acceleration.mut_replace(hoodDegPerSecPerSec, DegreesPerSecondPerSecond);
 
         inputs.appliedVoltage.mut_replace(volts, Volts);
 

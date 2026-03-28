@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -30,19 +31,22 @@ import frc.robot.Autons.Right_StopAtMiddle;
 import frc.robot.Autons.Test;
 import frc.robot.Autons.doNOTHING;
 import frc.robot.commands.MoveToAngle;
+import frc.robot.commands.TurretCameraPoseDefaultCommand;
 import frc.robot.commands.factories.Superstructure;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.IntakePivotSubsystem;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.feeder.FeederIOHardware;
 import frc.robot.subsystems.feeder.FeederIOSim;
 import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.hood.HoodIOHardware;
+import frc.robot.subsystems.hood.HoodIOSim;
+import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.intake.IntakeIOHardware;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.pivot.PivotIOHardware;
-import frc.robot.subsystems.pivot.PivotIOSim;
-import frc.robot.subsystems.pivot.PivotSubsystem;
+import frc.robot.subsystems.intakePivot.IntakePivotIOHardware;
+import frc.robot.subsystems.intakePivot.IntakePivotIOSim;
+import frc.robot.subsystems.intakePivot.IntakePivotSubsystem;
 import frc.robot.subsystems.shooter.ShooterIOHardware;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -91,7 +95,7 @@ public class RobotContainer {
     public final RobotState robotState = RobotState.getInstance();
     private final TurretSubsystem turret;
     private final ShooterSubsystem shooter;
-    private final PivotSubsystem pivot;
+    private final HoodSubsystem hood;
     private final FeederSubsystem feeder;
     private final SpindexerSubsystem spindexer;
     private final IntakeSubsystem intake;
@@ -112,7 +116,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         this.intakePivot = new IntakePivotSubsystem(
-            
+            Robot.isReal() ? new IntakePivotIOHardware() : new IntakePivotIOSim()
         );
         this.limelightTurret = new VisionTurretSubsystem(
             //  new VisionIOHardware(Constants.VisionConstants.kTurretLimelight)
@@ -127,8 +131,8 @@ public class RobotContainer {
             Robot.isReal() ? new FeederIOHardware() : new FeederIOSim()
         );
 
-        this.pivot = new PivotSubsystem(
-            Robot.isReal() ? new PivotIOHardware() : new PivotIOSim(), 
+        this.hood = new HoodSubsystem(
+            Robot.isReal() ? new HoodIOHardware() : new HoodIOSim(), 
             robotState
         );
         
@@ -142,7 +146,7 @@ public class RobotContainer {
             robotState
         );
 
-        this.swerve = TunerConstants.createDrivetrain(limelightTurret);
+        this.swerve = TunerConstants.createDrivetrain(limelightTurret, limelightChassis);
 
         this.intake = new IntakeSubsystem(
             Robot.isReal() ? new IntakeIOHardware() : new IntakeIOSim(swerve.mapleSimSwerveDrivetrain.mapleSimDrive)
@@ -152,7 +156,7 @@ public class RobotContainer {
             Robot.isReal() ? new ShooterIOHardware() : new ShooterIOSim(this.swerve.mapleSimSwerveDrivetrain.mapleSimDrive)
         );
         
-        this.superstructure = new Superstructure(swerve, intake, intakePivot, spindexer, feeder, turret, shooter, pivot);
+        this.superstructure = new Superstructure(swerve, intake, intakePivot, spindexer, feeder, turret, shooter, hood);
 
         configureBindings();
         printAutons();
@@ -194,18 +198,18 @@ public class RobotContainer {
             //     new GoToPositionCommand(swerve, robotState, new Pose2d(new Translation2d(2, 4), 
             //     new Rotation2d(Units.degreesToRadians(-90))), 1));
 
-            driver.rightBumper().whileTrue(
-            // driver.R1().whileTrue(
-                new MoveToAngle(
-                    swerve, 
-                    robotState, 
-                    robotState.getPose2d(),
-                    () -> robotState.justinTurretAngle(),
-                    // () -> robotState.getRobotToAllianceHubDegrees(),
-                    // () -> robotState.getTurretToAllianceHubDegrees(),
-                    1
-                )
-            );
+            // driver.rightBumper().whileTrue(
+            // // driver.R1().whileTrue(
+            //     new MoveToAngle(
+            //         swerve, 
+            //         robotState, 
+            //         robotState.getPose2d(),
+            //         () -> robotState.justinTurretAngle(),
+            //         // () -> robotState.getRobotToAllianceHubDegrees(),
+            //         // () -> robotState.getTurretToAllianceHubDegrees(),
+            //         1
+            //     )
+            // );
 
             // driver.leftBumper().whileTrue(
             //     new GoToPositionCommand(
@@ -225,12 +229,13 @@ public class RobotContainer {
         /*
         Turret Controls
         */
-            turret.setDefaultCommand(turret.runVoltsJoystick(() -> test.getRightX()));
-            // turret.setDefaultCommand(new TurretCameraPoseDefaultCommand(turret));
+            // turret.setDefaultCommand(turret.runVoltsJoystick(() -> test.getRightX()));
+            turret.setDefaultCommand(new TurretCameraPoseDefaultCommand(turret));
             // turret.setDefaultCommand(turret.TurretToSetpointCommand(Degrees.of(turretAngle.get())));
-            // operator.b().whileTrue(turret.TurretRunWithVolts(Volts.of(-3))); //To the right
-            // operator.x().whileTrue(turret.TurretRunWithVolts(Volts.of(3))); //To the left
-            // operator.a().whileTrue(turret.TurretToSetpointCommand(Degrees.of(0))); 
+            driver.x().whileTrue(turret.TurretRunWithVolts(Volts.of(3))); //To the left
+            driver.b().whileTrue(turret.TurretRunWithVolts(Volts.of(-3))); //To the right
+            driver.a().whileTrue(turret.TurretToSetpointCommand(Degrees.of(turretAngle.get()))); 
+            driver.povDown().whileTrue(turret.resetEncoder());
             // operator.povUp().whileTrue(turret.resetEncoder()); 
 
         /*
@@ -243,29 +248,29 @@ public class RobotContainer {
             
             // operator.R2().whileTrue(shooter.treeMapRPMCommand());
 
-            new Trigger(() -> shooter.atRPM).onTrue(
-                Commands.runOnce(() ->
-                    operator.setRumble(RumbleType.kBothRumble, 0.5)
-                ) 
-            )
-            .onFalse(
-                Commands.runOnce(() ->
-                    operator.setRumble(RumbleType.kBothRumble, 0.0)
-                )
-            );
+            // new Trigger(() -> shooter.atRPM).onTrue(
+            //     Commands.runOnce(() ->
+            //         operator.setRumble(RumbleType.kBothRumble, 0.5)
+            //     ) 
+            // )
+            // .onFalse(
+            //     Commands.runOnce(() ->
+            //         operator.setRumble(RumbleType.kBothRumble, 0.0)
+            //     )
+            // );
 
         /*
-        Pivot Controls
+        Hood Controls
         */
-            pivot.setDefaultCommand(pivot.runToPositionCommand(0));
-            // pivot.setDefaultCommand(pivot.treeMapRPMCommand());
-            operator.rightTrigger().whileTrue(pivot.treeMapRPMCommand());
-            operator.y().whileTrue(pivot.runToPositionCommand(15));
+            // hood.setDefaultCommand(Commands.run(() -> hood.runToPosition(), hood));
+            // hood.setDefaultCommand(hood.treeMapRPMCommand());
+            driver.rightTrigger().whileTrue(hood.treeMapRPMCommand());
+            // operator.y().whileTrue(hood.runToPositionCommand(15));
 
-            // operator.y().whileTrue(pivot.runVolts(6));
-            // operator.a().whileTrue(pivot.runVolts(-6));
-            // operator.rightBumper().whileTrue(pivot.runToPositionCommand(10));
-            // operator.povUp().whileTrue(pivot.resetEncoder());
+            test.y().whileTrue(hood.runVolts(2));
+            test.a().whileTrue(hood.runVolts(-2));
+            // operator.rightBumper().whileTrue(hood.runToPositionCommand(10));
+            // operator.povUp().whileTrue(hood.resetEncoder());
         
         /*
         Feeder Controls
@@ -282,6 +287,8 @@ public class RobotContainer {
             // operator.L2().whileTrue(spindexer.runSpindexerVoltsCommand(12));
 
             new Trigger(() -> shooter.atRPM).whileTrue(spindexer.runSpindexerVoltsCommand(12));
+
+            driver.leftTrigger().whileTrue(spindexer.runSpindexerVoltsCommand(-12));
 
 
         // Idle while the robot is disabled. This ensures the configured
@@ -309,7 +316,9 @@ public class RobotContainer {
             // operator.L2().whileTrue(intakePivot.runVolts(3));
             // operator.povUp().whileTrue(intakePivot.resetEncoder());
 
-            test.a().whileTrue(intakePivot.runPivotTimeBasedCommand());
+            operator.a().whileTrue(intakePivot.goDown());
+            operator.x().whileTrue(intakePivot.bounce()).and(() -> intakePivot.up).whileTrue(intake.runVolts(6));
+
 
         swerve.registerTelemetry(logger::telemeterize);
 
@@ -336,10 +345,10 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         switch (a_chooser.getSelected()) {
             case 1:
-                return new Test(swerve, robotState, shooter, intakePivot, intake, feeder, spindexer, pivot, superstructure);
+                return new Test(swerve, robotState, shooter, intakePivot, intake, feeder, spindexer, hood, superstructure);
 
             case 2:
-                return new Left_Center(swerve, robotState, shooter, intakePivot, intake, feeder, spindexer, pivot, superstructure);
+                return new Left_Center(swerve, robotState, shooter, intakePivot, intake, feeder, spindexer, hood, superstructure);
 
             case 3:
                 return new doNOTHING(swerve);
@@ -351,10 +360,10 @@ public class RobotContainer {
                 return new Right_StopAtMiddle(superstructure);
                 
             case 6:
-                return new Right_Center(swerve, robotState, shooter, intakePivot, intake, feeder, spindexer, pivot, superstructure);
+                return new Right_Center(swerve, robotState, shooter, intakePivot, intake, feeder, spindexer, hood, superstructure);
                 
             default:
-                return new Test(swerve, robotState, shooter, intakePivot, intake, feeder, spindexer, pivot, superstructure);
+                return new Test(swerve, robotState, shooter, intakePivot, intake, feeder, spindexer, hood, superstructure);
 
         }
     }  

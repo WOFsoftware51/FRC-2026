@@ -145,22 +145,22 @@ public final class Constants {
   
   public static final class TurretConstants {
     public static final int kMotorID = 46;
-    public static final double kGearRatio = 56.66;//37.33; 
+    public static final double kGearRatio = 45.3333;//37.33; 
 
     // public static final double kForwardLimit = 135.0;
     // public static final double kReverseLimit = -135;
-    public static final double kForwardLimit = 380.0;
-    public static final double kReverseLimit = -20.0;
+    public static final double kForwardLimit = 290.0 - 10;
+    public static final double kReverseLimit = -90.0 + 10.0;
         
   }
   
-  public static final class PivotConstants {
+  public static final class HoodConstants {
     public static final int kMotorID = 48;
     public static final int kCANCoderID = 3;
     public static final double kGearRatio = 320.0;
     public static final double kCANCoderGearRatio = 9.0;
 
-    public static final double kCANCoderOffset = -0.373291;
+    public static final double kCANCoderOffset = -0.329102;
 
 
     public static final double kForwardLimit = 21;
@@ -181,7 +181,7 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    public static final String kChassisLimelight = "chassis-limelight";
+    public static final String kChassisLimelight = "limelight-chassis";
     public static final String kTurretLimelight = "limelight-turret";
   }
 

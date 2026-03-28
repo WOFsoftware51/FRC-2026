@@ -14,11 +14,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotState;
 import frc.robot.commands.MoveToAngle;
 import frc.robot.commands.factories.Superstructure;
-import frc.robot.subsystems.IntakePivotSubsystem;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.pivot.PivotSubsystem;
+import frc.robot.subsystems.intakePivot.IntakePivotSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 
@@ -38,7 +38,7 @@ public class Left_Center extends SequentialCommandGroup {
     IntakeSubsystem intake, 
     FeederSubsystem feeder, 
     SpindexerSubsystem spindexer, 
-    PivotSubsystem pivot, 
+    HoodSubsystem hood, 
     Superstructure superstructure
     ) 
     {
@@ -51,7 +51,7 @@ public class Left_Center extends SequentialCommandGroup {
       addCommands(
         AutoBuilder.resetOdom(LeftTrench_Center.getStartingHolonomicPose().get()),
         AutoBuilder.followPath(LeftTrench_Center),
-        intakePivot.runSetpointCommand(0).withTimeout(3),
+        intakePivot.runSetpoint(0).withTimeout(3),
         AutoBuilder.followPath(Center_Pickup).raceWith(intake.runVolts(10.8)),
         AutoBuilder.followPath(PickUp_LeftTrench),
         new MoveToAngle(swerve, robotState, swerve.getState().Pose, () -> robotState.justinTurretAngle(), 1).withTimeout(3),

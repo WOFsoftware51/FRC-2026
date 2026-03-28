@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -64,14 +65,14 @@ public class ShooterIOHardware implements ShooterIO{
     @Override
     public void runVolts(Voltage volts) {
         double clampedEffort = MathUtil.clamp(volts.magnitude(), -12, 12);
-        motorLeft.setVoltage(clampedEffort);
+        motorLeft.setControl(new VoltageOut(clampedEffort).withEnableFOC(true));
     }
 
     @Override
     public void runVelocityRPM(AngularVelocity velocityRPM) {
         this.targetVelocity = (velocityRPM.in(RotationsPerSecond))*Constants.ShooterConstants.kGearRatio;
-        this.speed.withVelocity(this.targetVelocity);
-        motorLeft.setControl(speed);
+        this.speed.withVelocity(this.targetVelocity).withEnableFOC(true);
+        motorLeft.setControl(this.speed);
     }
 
     @Override

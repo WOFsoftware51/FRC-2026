@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -37,9 +38,9 @@ public class SpindexerIOHardware implements SpindexerIO {
         backConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
 
         configs.CurrentLimits.StatorCurrentLimitEnable = true;
-        configs.CurrentLimits.StatorCurrentLimit = 20;
+        configs.CurrentLimits.StatorCurrentLimit = 40;
         backConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
-        backConfigs.CurrentLimits.StatorCurrentLimit = 20;
+        backConfigs.CurrentLimits.StatorCurrentLimit = 40;
 
 
         motorFront.getConfigurator().apply(configs);
@@ -67,7 +68,7 @@ public class SpindexerIOHardware implements SpindexerIO {
     @Override
     public void runVolts(Voltage volts) {
         double clampedEffort = MathUtil.clamp(volts.magnitude(), -12, 12);
-        motorFront.setVoltage(clampedEffort);
+        motorFront.setControl(new VoltageOut(clampedEffort).withEnableFOC(true));
     }
 
     @Override

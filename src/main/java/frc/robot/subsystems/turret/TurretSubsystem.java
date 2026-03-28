@@ -7,15 +7,21 @@ package frc.robot.subsystems.turret;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.vision.VisionTurretSubsystem;
 import frc.robot.util.LoggedTunableNumber;
@@ -39,10 +45,12 @@ public class TurretSubsystem extends SubsystemBase {
   
   private boolean inTXWindow = false;
   
-  double chassisOmegaDPS;
+  Supplier<Double> chassisOmegaDPS;
 
+  private Pose2d turretPose2d = new Pose2d();
+  private Pose2d rotatedTurret = new Pose2d();
 
-  LoggedTunableNumber mainThreadLatency = new LoggedTunableNumber("mainThreadLatency", 0.06);
+  LoggedTunableNumber mainThreadLatency = new LoggedTunableNumber("mainThreadLatency", 0.07);
 
 
   public TurretSubsystem(TurretIO io, VisionTurretSubsystem limelight, RobotState robotState) {
@@ -62,7 +70,11 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void turretCameraAimToHub() {
-    io.runSetpoint(Degrees.of(targetDegrees));
+    // if(Math.abs(targetDegrees-currentDegrees) > 2)
+      io.runSetpoint(Degrees.of(targetDegrees));
+    // else {
+      // io.stop();
+    // }
   }
 
 
@@ -76,14 +88,27 @@ public class TurretSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     this.io.updateInputs(inputs);
-    // robotState.setRobotToTurret(inputs.position.in(Degrees));
+    robotState.setRobotToTurret(inputs.position.in(Degrees));
     robotState.setRobotToLimelight();
     
     visionLatency = ((limelight.inputs.tl + limelight.inputs.cl)/1000.0);
     totalLatency = visionLatency + mainThreadLatency.getAsDouble();
 
+    turretPose2d = robotState.getPose2d().transformBy(new Transform2d(robotState.getRobotToTurret().toPose2d().getTranslation(), robotState.getRobotToTurret().toPose2d().getRotation()));
+    Pose3d turretPose3d = new Pose3d(turretPose2d);
+    Logger.recordOutput("turretPose3d", 
+      new double[] {
+        turretPose3d.getX(), 
+        turretPose3d.getY(), 
+        turretPose3d.getZ(),
+        turretPose3d.getRotation().getZ()
+      }
+    );
+
     robotHeading = robotState.getPose2d().getRotation().getDegrees();
-    degreesToHub = robotState.getRobotToAllianceHubDegrees().in(Degrees);
+    // degreesToHub = robotState.getRobotToAllianceHubDegrees().in(Degrees);
+    degreesToHub = robotState.getRobotToAllianceHubDegrees(turretPose2d).in(Degrees);
+
 
     if(Math.abs(limelight.inputs.tx)>0.5) {
       tx = limelight.inputs.tx;
@@ -96,17 +121,25 @@ public class TurretSubsystem extends SubsystemBase {
 
 
     tv = limelight.inputs.tv;
-    chassisOmegaDPS = RadiansPerSecond.of(robotState.getChassisSpeeds().omegaRadiansPerSecond).in(DegreesPerSecond);
+    chassisOmegaDPS = () -> RadiansPerSecond.of(robotState.getChassisSpeeds().omegaRadiansPerSecond).in(DegreesPerSecond);
     
     
-    currentDegrees = MathUtil.inputModulus(inputs.position.in(Degrees), -180, 180);
+    currentDegrees = MathUtil.inputModulus(inputs.position.in(Degrees), -80, 280);
         
     // targetDegrees = (currentDegrees - tx) + (
     //   chassisOmegaDPS * totalLatency);
 
-    targetDegrees = MathUtil.inputModulus(robotHeading - degreesToHub , -180, 180) 
-    + (chassisOmegaDPS * totalLatency);
+    double angleMovingOffset = (chassisOmegaDPS.get() * totalLatency);
+
+    targetDegrees = MathUtil.inputModulus(degreesToHub - robotHeading, -80, 280) 
+    - (angleMovingOffset);
+
+    double turretToHubDistance = turretPose2d.getTranslation().getDistance(Constants.PoseConstants.kCurrentAllianceHubTarget.get().getTranslation());
+    robotState.setHubToTurret(turretToHubDistance);
     
+    Logger.recordOutput("turretToHubDistance", turretToHubDistance);
+
+
     robotState.setTurretTimeStamp(Timer.getFPGATimestamp(), currentDegrees);
 
 
@@ -116,6 +149,8 @@ public class TurretSubsystem extends SubsystemBase {
     Logger.recordOutput("Turret/inTXWindow", inTXWindow);
 
     // Logger.recordOutput("Turret/RobotToLimelight", robotState.getLimelightTransformPose());
+
+    Logger.recordOutput("Turret/angleMovingOffset", angleMovingOffset);
 
     Logger.recordOutput("Turret/HubError", degreesToHub);
     
@@ -144,11 +179,11 @@ public class TurretSubsystem extends SubsystemBase {
   }
   
   public Command TurretToSetpointCommand(Angle positionInDegrees) {
-    return run(
-      () ->io.runSetpoint(positionInDegrees)
+    return run(() ->
+      io.runSetpoint(positionInDegrees)
     )
-    .finallyDo(
-      () -> io.stop()
+    .finallyDo(() -> 
+      io.stop()
     );
   }
 

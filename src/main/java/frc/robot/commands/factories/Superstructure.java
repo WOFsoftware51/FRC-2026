@@ -7,11 +7,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.RobotState;
 import frc.robot.commands.MoveToAngle;
-import frc.robot.subsystems.IntakePivotSubsystem;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.hood.HoodSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.pivot.PivotSubsystem;
+import frc.robot.subsystems.intakePivot.IntakePivotSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
@@ -26,7 +26,7 @@ public class Superstructure {
     FeederSubsystem feeder; 
     TurretSubsystem turret;
     ShooterSubsystem shooter;
-    PivotSubsystem pivot;
+    HoodSubsystem hood;
 
     public Superstructure(
         Swerve swerve,
@@ -36,7 +36,7 @@ public class Superstructure {
         FeederSubsystem feeder, 
         TurretSubsystem turret, 
         ShooterSubsystem shooter, 
-        PivotSubsystem pivot
+        HoodSubsystem hood
     ) {
         this.swerve = swerve;
         this.intake = intake;
@@ -45,7 +45,7 @@ public class Superstructure {
         this.feeder = feeder; 
         this.turret = turret; 
         this.shooter = shooter;
-        this.pivot = pivot;
+        this.hood = hood;
     }
 
     public Command shoot() {

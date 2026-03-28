@@ -1,4 +1,4 @@
-package frc.robot.subsystems.pivot;
+package frc.robot.subsystems.hood;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -6,35 +6,38 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 
-public class PivotIOHardware implements PivotIO{
-    private TalonFX motor = new TalonFX(Constants.PivotConstants.kMotorID, Constants.kCANIvoreName); //x44
-    private CANcoder cancoder = new CANcoder(Constants.PivotConstants.kCANCoderID, Constants.kCANIvoreName);
+public class HoodIOHardware implements HoodIO{
+    private TalonFX motor = new TalonFX(Constants.HoodConstants.kMotorID, Constants.kCANIvoreName); //x44
+    private CANcoder cancoder = new CANcoder(Constants.HoodConstants.kCANCoderID, Constants.kCANIvoreName);
     // 0 = -79.541016°
     // 27.17 = -262.265625°
 
     private TalonFXConfiguration configs = new TalonFXConfiguration();
     private CANcoderConfiguration canCoderConfigs = new CANcoderConfiguration();
   
-    private double forwardLimit = (Constants.PivotConstants.kForwardLimit/360.0)*Constants.PivotConstants.kGearRatio;
-    private double reverseLimit = (Constants.PivotConstants.kReverseLimit/360.0)*Constants.PivotConstants.kGearRatio;
+    private double forwardLimit = (Constants.HoodConstants.kForwardLimit/360.0)*Constants.HoodConstants.kGearRatio;
+    private double reverseLimit = (Constants.HoodConstants.kReverseLimit/360.0)*Constants.HoodConstants.kGearRatio;
 
 
     MotionMagicVoltage motion = new MotionMagicVoltage(0);
     double target = 0;
 
 
-    public PivotIOHardware() {
+    public HoodIOHardware() {
         configs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         configs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         configs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = forwardLimit;
@@ -52,6 +55,11 @@ public class PivotIOHardware implements PivotIO{
         configs.Slot0.kV = 0.09099999815225601;
         configs.Slot0.kA = 0.0;
         configs.Slot0.kG = 0.0498046875;
+        configs.Slot0.kG = 0;
+
+        configs.Slot0.withGravityType(GravityTypeValue.Arm_Cosine);
+        configs.Slot0.withGravityArmPositionOffset(Units.degreesToRotations(0));
+    
 
         configs.ClosedLoopGeneral.ContinuousWrap = false;
         
@@ -78,23 +86,22 @@ public class PivotIOHardware implements PivotIO{
 
     private void updateEncoder(){
         if(cancoder.isConnected()){
-            motor.getConfigurator().setPosition(((getCANCoderRotations()-Constants.PivotConstants.kCANCoderOffset)/Constants.PivotConstants.kCANCoderGearRatio)*Constants.PivotConstants.kGearRatio);
+            motor.getConfigurator().setPosition(((getCANCoderRotations()-Constants.HoodConstants.kCANCoderOffset)/Constants.HoodConstants.kCANCoderGearRatio)*Constants.HoodConstants.kGearRatio);
         }
     }
 
 
     @Override
-    public void updateInputs(PivotIOInputs inputs) {
+    public void updateInputs(HoodIOInputs inputs) {
         double motorRotations = motor.getPosition().getValueAsDouble();
         double motorRPS = motor.getVelocity().getValueAsDouble();
         double motorRPSPS = motor.getAcceleration().getValueAsDouble();
 
-        double pivotDegrees = Rotations.of(motorRotations).in(Degrees)/Constants.PivotConstants.kGearRatio;
-        double velocityDegreesPerSecond = RotationsPerSecond.of(motorRPS).in(DegreesPerSecond)/Constants.PivotConstants.kGearRatio;
-        double velocityDegreesPerSecondPerSecond = RotationsPerSecondPerSecond.of(motorRPSPS).in(DegreesPerSecondPerSecond)/Constants.PivotConstants.kGearRatio;
+        double hoodDegrees = Rotations.of(motorRotations).in(Degrees)/Constants.HoodConstants.kGearRatio;
+        double velocityDegreesPerSecond = RotationsPerSecond.of(motorRPS).in(DegreesPerSecond)/Constants.HoodConstants.kGearRatio;
+        double velocityDegreesPerSecondPerSecond = RotationsPerSecondPerSecond.of(motorRPSPS).in(DegreesPerSecondPerSecond)/Constants.HoodConstants.kGearRatio;
 
-        inputs.position.mut_replace(pivotDegrees, Degrees);
-        inputs.targetPosition.mut_replace(target/360, Degrees);
+        inputs.position.mut_replace(hoodDegrees, Degrees);
         inputs.velocity.mut_replace(velocityDegreesPerSecond, DegreesPerSecond);
         inputs.acceleration.mut_replace(velocityDegreesPerSecondPerSecond, DegreesPerSecondPerSecond);
 
@@ -109,13 +116,13 @@ public class PivotIOHardware implements PivotIO{
     @Override
     public void runVolts(Voltage volts) {
         double clampedEffort = MathUtil.clamp(volts.in(Volts), -12, 12);
-        motor.setVoltage(clampedEffort);
+        motor.setControl(new VoltageOut(clampedEffort).withEnableFOC(true));
     }
 
     @Override
     public void runSetpoint(Angle degrees) {
-        this.target = (degrees.in(Rotations))*Constants.PivotConstants.kGearRatio;
-        this.motion.withPosition(target);
+        this.target = (degrees.in(Rotations))*Constants.HoodConstants.kGearRatio;
+        this.motion.withPosition(target).withEnableFOC(true);
         motor.setControl(motion);
     }
 

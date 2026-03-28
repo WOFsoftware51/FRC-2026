@@ -1,4 +1,4 @@
-package frc.robot.subsystems.pivot;
+package frc.robot.subsystems.hood;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -10,30 +10,27 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.util.LoggedTunableNumber;
 
-public class PivotSubsystem extends SubsystemBase{
-    PivotIO io;
-    PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
+public class HoodSubsystem extends SubsystemBase{
+    HoodIO io;
+    HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
     RobotState robotState;
 
-    LoggedTunableNumber position = new LoggedTunableNumber("Pivot/SetDegrees", 0.0);
+    LoggedTunableNumber position = new LoggedTunableNumber("Hood/SetDegrees", 0.0);
 
     InterpolatingDoubleTreeMap treeMap = new InterpolatingDoubleTreeMap();
 
-    public PivotSubsystem(PivotIO io, RobotState robotState) {
+    public HoodSubsystem(HoodIO io, RobotState robotState) {
         this.io = io;
         this.robotState = robotState;
 
-        treeMap.put(Inches.of(101.90).in(Meters), 0.0);
-        treeMap.put(Inches.of(144.50).in(Meters), 3.0);
-        treeMap.put(Inches.of(182.38).in(Meters), 5.0);
-        treeMap.put(Inches.of(207.28).in(Meters), 9.0);
-        treeMap.put(Inches.of(66.000).in(Meters), 0.0);
-        treeMap.put(Inches.of(77.8).in(Meters), 0.0);
-        treeMap.put(Inches.of(91.2).in(Meters), 0.0);
-        treeMap.put(Inches.of(116.0).in(Meters), 1.0);
-        treeMap.put(Inches.of(134.7).in(Meters), 3.0);
-        treeMap.put(Inches.of(160.3).in(Meters), 4.0);
-
+        treeMap.put(Inches.of(68.2).in(Meters), 2.0);
+        treeMap.put(Inches.of(87.4).in(Meters), 2.0);
+        treeMap.put(Inches.of(107.0).in(Meters), 3.0);
+        treeMap.put(Inches.of(127.0).in(Meters), 3.0);
+        treeMap.put(Inches.of(147.6).in(Meters), 4.0);
+        treeMap.put(Inches.of(166.6).in(Meters), 8.0);
+        treeMap.put(Inches.of(184.0).in(Meters), 10.0);
+        treeMap.put(Inches.of(208.0).in(Meters), 12.0);
     }
 
     public void runToDistanceFromHub() {
@@ -47,9 +44,9 @@ public class PivotSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.processInputs("Pivot", inputs);
+        Logger.processInputs("Hood", inputs);
 
-        Logger.recordOutput("Pivot/TreeMap Angle", treeMap.get(Double.valueOf(robotState.getDistanceFromHubMeters())));
+        Logger.recordOutput("Hood/TreeMap Angle", treeMap.get(Double.valueOf(robotState.getDistanceFromHubMeters())));
 
     }
 
@@ -79,7 +76,7 @@ public class PivotSubsystem extends SubsystemBase{
 
     public Command treeMapRPMCommand() {
         return run(() ->
-            io.runSetpoint(Degrees.of(treeMap.get(Double.valueOf(robotState.getDistanceFromHubMeters()))))
+            io.runSetpoint(Degrees.of(treeMap.get(Double.valueOf(robotState.getHubToTurret()))))
         );
     
     }

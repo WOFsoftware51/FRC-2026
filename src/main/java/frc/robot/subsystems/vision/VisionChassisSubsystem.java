@@ -6,12 +6,14 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.RobotState;
 
 public class VisionChassisSubsystem extends SubsystemBase{
     private VisionIO io;
-    private VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
+    public VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
 
-    Pose3d cameraPose2d;
+    public Pose3d cameraPose2d;
     Pose2d visionPose = new Pose2d();
     Pose2d visionMegaTag2 = new Pose2d();
 
@@ -53,6 +55,11 @@ public class VisionChassisSubsystem extends SubsystemBase{
             );
 
         }
+
+        cameraPose2d = LimelightHelpers.getBotPose3d_wpiBlue(Constants.VisionConstants.kChassisLimelight);
+
+        RobotState.getInstance().setChassisLimelightPose2d(visionMegaTag2);
+        RobotState.getInstance().setLimelightChassisTimeStamp(inputs.mt2TimeStamp);
         Logger.processInputs("Vision/Chassis Limelight", inputs);
     }
 }
