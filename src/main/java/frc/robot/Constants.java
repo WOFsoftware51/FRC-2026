@@ -123,7 +123,7 @@ public final class Constants {
     public static final double kGearRatio = 80.0;
     public static final double kCANCoderGearRatio = 2.0; //2x slower than givto
 
-    public static final double kCANCoderOffset = 0.158936;
+    public static final double kCANCoderOffset = 0.150879;
 
     public static final double kForwardLimit = 0.0;
     public static final double kReverseLimit = 0.0;

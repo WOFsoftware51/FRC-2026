@@ -43,7 +43,8 @@ public class IntakePivotSubsystem extends SubsystemBase {
         }
 
       }
-    );
+    )
+    .until(() -> inputs.limitSwitchBoolean);
   }
 
   public Command bounce() {

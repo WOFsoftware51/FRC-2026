@@ -94,7 +94,7 @@ public class IntakePivotIOHardware implements IntakePivotIO{
         inputs.supplyCurrent.mut_replace(motor.getSupplyCurrent().getValue());
         inputs.torqueCurrent.mut_replace(motor.getTorqueCurrent().getValue());
 
-        inputs.canCoderPosition.mut_replace(cancoder.getPosition().getValue());
+        inputs.canCoderPosition.mut_replace(getCANCoderRotations(), Rotations);
 
         inputs.limitSwitchBoolean = getLimitSwitch();
     }
