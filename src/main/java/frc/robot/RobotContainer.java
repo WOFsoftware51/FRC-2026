@@ -80,8 +80,6 @@ public class RobotContainer {
 
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
-    // private final CommandPS5Controller driver = new CommandPS5Controller(0);
-    // private final CommandPS5Controller operator = new CommandPS5Controller(1);
     
     private final CommandXboxController joystick = new CommandXboxController(3);
     private final CommandXboxController test = new CommandXboxController(5);
@@ -225,53 +223,37 @@ public class RobotContainer {
 
             
             driver.start().onTrue(swerve.runOnce(() -> swerve.resetPose(new Pose2d())));
-            // driver.touchpad().onTrue(swerve.runOnce(() -> swerve.resetPose(new Pose2d())));
 
         /*
         Turret Controls
         */
-            // turret.setDefaultCommand(turret.runVoltsJoystick(() -> test.getRightX()));
+            // turret.setDefaultCommand(turret.runVoltsJoystick(() -> joystick.getRightX()));
             // turret.setDefaultCommand(new TurretCameraPoseDefaultCommand(turret));
-            // turret.setDefaultCommand(turret.TurretToSetpointCommand(Degrees.of(turretAngle.get())));
-            driver.x().whileTrue(turret.TurretRunWithVolts(Volts.of(3))); //To the left
-            driver.b().whileTrue(turret.TurretRunWithVolts(Volts.of(-3))); //To the right
-            driver.a().whileTrue(turret.TurretToSetpointCommand(Degrees.of(turretAngle.get()))); 
-            driver.povDown().whileTrue(turret.resetEncoder());
-            // operator.povUp().whileTrue(turret.resetEncoder()); 
+            test.x().whileTrue(turret.TurretRunWithVolts(Volts.of(3))); //To the left
+            test.b().whileTrue(turret.TurretRunWithVolts(Volts.of(-3))); //To the right
+
+            test.povDown().whileTrue(turret.resetEncoder());
+
 
         /*
         Shooter Controls
         */
             new Trigger(() -> shooter.gainsChanged).whileTrue(shooter.updateGainsCommand());
             // driver.rightTrigger().whileTrue(shooter.runRPMCommand());
-            driver.rightTrigger().whileTrue(shooter.treeMapRPMCommand());
+            operator.rightTrigger().whileTrue(shooter.treeMapRPMCommand());
             operator.y().whileTrue(shooter.runRPMCommand(3500));
             
-            // operator.R2().whileTrue(shooter.treeMapRPMCommand());
-
-            // new Trigger(() -> shooter.atRPM).onTrue(
-            //     Commands.runOnce(() ->
-            //         operator.setRumble(RumbleType.kBothRumble, 0.5)
-            //     ) 
-            // )
-            // .onFalse(
-            //     Commands.runOnce(() ->
-            //         operator.setRumble(RumbleType.kBothRumble, 0.0)
-            //     )
-            // );
 
         /*
         Hood Controls
         */
             hood.setDefaultCommand(Commands.run(() -> hood.runToPosition(), hood));
             // hood.setDefaultCommand(hood.treeMapRPMCommand());
-            driver.rightTrigger().whileTrue(hood.treeMapRPMCommand());
-            // operator.y().whileTrue(hood.runToPositionCommand(15));
+            operator.rightTrigger().whileTrue(hood.treeMapRPMCommand());
+            operator.y().whileTrue(hood.runToPositionCommand(15));
 
-            test.y().whileTrue(hood.runVolts(2));
-            test.a().whileTrue(hood.runVolts(-2));
-            // operator.rightBumper().whileTrue(hood.runToPositionCommand(10));
-            // operator.povUp().whileTrue(hood.resetEncoder());
+            joystick.y().whileTrue(hood.runVolts(2));
+            joystick.a().whileTrue(hood.runVolts(-2));
         
         /*
         Feeder Controls
@@ -289,7 +271,7 @@ public class RobotContainer {
 
             new Trigger(() -> shooter.atRPM).whileTrue(spindexer.runSpindexerVoltsCommand(12));
 
-            driver.leftTrigger().whileTrue(spindexer.runSpindexerVoltsCommand(-12));
+            // operator.leftTrigger().whileTrue(spindexer.runSpindexerVoltsCommand(-12));
 
 
         // Idle while the robot is disabled. This ensures the configured
@@ -303,29 +285,18 @@ public class RobotContainer {
         Intake
         */
             driver.leftBumper().whileTrue(intake.runVolts(10.8));
-            // driver.L1().whileTrue(intake.runVolts(12));
-        
+
+            
         /*
         Intake Pivot
         */
             intakePivot.setDefaultCommand(intakePivot.runVoltsJoystick(() -> operator.getRightY()*0.5));
-            // joystick.a().whileTrue(intakePivot.runSetpointCommand(0));
-            // joystick.a().whileTrue(intakePivot.runSetpointCommand(-100));
-            operator.leftBumper().whileTrue(intakePivot.runVolts(-6).alongWith(intake.runVolts(12)));
-            operator.rightBumper().whileTrue(intakePivot.runVolts(6).alongWith(intake.runVolts(12)));
-            // operator.L1().whileTrue(intakePivot.runVolts(-3));
-            // operator.L2().whileTrue(intakePivot.runVolts(3));
-            // operator.povUp().whileTrue(intakePivot.resetEncoder());
 
             operator.a().whileTrue(intakePivot.goDown());
             operator.x().whileTrue(intakePivot.bounce()).and(() -> intakePivot.up).whileTrue(intake.runVolts(6));
         
 
         swerve.registerTelemetry(logger::telemeterize);
-
-
-
-        joystick.a().whileTrue(superstructure.test());
 
 
     }
