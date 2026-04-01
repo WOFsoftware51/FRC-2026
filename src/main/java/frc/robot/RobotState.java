@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -48,7 +49,7 @@ public class RobotState {
     private Translation3d robotToTurreTranslation3d = 
         new Translation3d(
             Inches.of(-5.5), 
-            Inches.of(7.75), 
+            Inches.of(-7.75), 
             Inches.of(16.09)
         );  
     
@@ -84,8 +85,18 @@ public class RobotState {
 
     private double mt2TimeStampChassis;
 
+
+    InterpolatingDoubleTreeMap timeOfFlight = new InterpolatingDoubleTreeMap();
+
     private RobotState() {
-    
+        timeOfFlight.put(Inches.of(68.2).in(Meters), 0.55);
+        timeOfFlight.put(Inches.of(87.4).in(Meters), 0.65);
+        timeOfFlight.put(Inches.of(107.0).in(Meters), 0.75);
+        timeOfFlight.put(Inches.of(127.0).in(Meters), 0.85);
+        timeOfFlight.put(Inches.of(147.6).in(Meters), 0.95);
+        timeOfFlight.put(Inches.of(166.6).in(Meters), 1.05);
+        timeOfFlight.put(Inches.of(184.0).in(Meters), 1.15);
+        timeOfFlight.put(Inches.of(208.0).in(Meters), 1.30);
     }
 
 
@@ -195,7 +206,7 @@ public class RobotState {
 
     public void setChassisSpeeds(ChassisSpeeds robotChassisSpeeds, ChassisSpeeds fieldRelativeChassisSpeeds) {
         this.robotChassisSpeeds = robotChassisSpeeds;
-        fieldRelativeChassisSpeeds = this.fieldRelativeChassisSpeeds;
+        this.fieldRelativeChassisSpeeds = fieldRelativeChassisSpeeds;
     }
     public ChassisSpeeds getChassisSpeeds() {
         return robotChassisSpeeds;
@@ -330,11 +341,16 @@ public class RobotState {
         return distance;
     }
 
-    public void setHubToTurret(double distance) {
+    public void setTurretToHub(double distance) {
         this.hubToTurret = distance;
     }
 
-    public double getHubToTurret() {
+    public double getTurretToHub() {
         return this.hubToTurret;
+    }
+
+    
+    public double getTimeOfFlight() {
+        return timeOfFlight.get(getTurretToHub());
     }
 }

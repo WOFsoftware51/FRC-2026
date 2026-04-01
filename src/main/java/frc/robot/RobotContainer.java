@@ -228,7 +228,7 @@ public class RobotContainer {
         Turret Controls
         */
             // turret.setDefaultCommand(turret.runVoltsJoystick(() -> joystick.getRightX()));
-            // turret.setDefaultCommand(new TurretCameraPoseDefaultCommand(turret));
+            turret.setDefaultCommand(new TurretCameraPoseDefaultCommand(turret));
             test.x().whileTrue(turret.TurretRunWithVolts(Volts.of(3))); //To the left
             test.b().whileTrue(turret.TurretRunWithVolts(Volts.of(-3))); //To the right
 
