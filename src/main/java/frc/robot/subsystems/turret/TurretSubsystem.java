@@ -48,9 +48,9 @@ public class TurretSubsystem extends SubsystemBase {
   
   private boolean inTXWindow = false;
   
-  Supplier<Double> chassisOmegaDPS;
+  double chassisOmegaDPS;
 
-  private Pose2d turretPose2d = new Pose2d();
+  // private Pose2d turretPose2d = new Pose2d();
 
   LoggedTunableNumber mainThreadLatency = new LoggedTunableNumber("mainThreadLatency", 0.07);
 
@@ -98,19 +98,45 @@ public class TurretSubsystem extends SubsystemBase {
       ()-> io.resetEncoder()
     );
   }  
+
   
+  private double turretFieldX, turretFieldY;
+
+  private void updateTurretFieldPose() {
+      double robotX = robotState.getPose2d().getX();
+      double robotY = robotState.getPose2d().getY();
+      double headingRad = Math.toRadians(robotHeading);
+      double cos = Math.cos(headingRad);
+      double sin = Math.sin(headingRad);
+      double tx = robotState.getRobotToTurret().getX();
+      double ty = robotState.getRobotToTurret().getY();
+      turretFieldX = robotX + tx * cos - ty * sin;
+      turretFieldY = robotY + tx * sin + ty * cos;
+  }
 
   @Override
   public void periodic() {
     this.io.updateInputs(inputs);
+    robotHeading = robotState.getPose2d().getRotation().getDegrees();
+    robotState.setRobotToTurret(inputs.position.in(Degrees));
+
+    
     updateTurretVelocity();
+    updateTurretFieldPose();
 
-    turretPose2d = robotState.getPose2d().transformBy(new Transform2d(robotState.getRobotToTurret().toPose2d().getTranslation(), robotState.getRobotToTurret().toPose2d().getRotation()));
+    // turretPose2d = robotState.getPose2d().transformBy(new Transform2d(robotState.getRobotToTurret().toPose2d().getTranslation(), robotState.getRobotToTurret().toPose2d().getRotation()));
 
-    double turretToHubDistance = turretPose2d.getTranslation().getDistance(Constants.PoseConstants.kCurrentAllianceHubTarget.get().getTranslation());
+    // double turretToHubDistance = turretPose2d.getTranslation().getDistance(Constants.PoseConstants.kCurrentAllianceHubTarget.get().getTranslation());
+    double turretToHubDistance = 
+      Math.hypot(
+        Constants.PoseConstants.kCurrentAllianceHubTarget.get().getTranslation().getX() - 
+        turretFieldX, 
+        Constants.PoseConstants.kCurrentAllianceHubTarget.get().getTranslation().getY()- 
+        turretFieldY
+      );
+
     robotState.setTurretToHub(turretToHubDistance);
 
-    robotState.setRobotToTurret(inputs.position.in(Degrees));
     robotState.setRobotToLimelight();
     
     visionLatency = ((limelight.inputs.tl + limelight.inputs.cl)/1000.0);
@@ -127,9 +153,9 @@ public class TurretSubsystem extends SubsystemBase {
     // );
 
 
-    robotHeading = robotState.getPose2d().getRotation().getDegrees();
-    // degreesToHub = robotState.getRobotToAllianceHubDegrees().in(Degrees);
-    degreesToHub = robotState.getRobotToAllianceHubDegrees(turretPose2d).in(Degrees);
+
+    // degreesToHub = robotState.getRobotToAllianceHubDegrees(turretPose2d).in(Degrees);
+    degreesToHub = robotState.getRobotToAllianceHubDegrees(turretFieldX, turretFieldY).in(Degrees);
 
 
     if(Math.abs(limelight.inputs.tx)>0.5) {
@@ -143,7 +169,7 @@ public class TurretSubsystem extends SubsystemBase {
 
 
     tv = limelight.inputs.tv;
-    chassisOmegaDPS = () -> RadiansPerSecond.of(robotState.getChassisSpeeds().omegaRadiansPerSecond).in(DegreesPerSecond);
+    chassisOmegaDPS = Math.toDegrees(robotState.getChassisSpeeds().omegaRadiansPerSecond);
     
     
     currentDegrees = MathUtil.inputModulus(inputs.position.in(Degrees), -80, 280);
@@ -151,7 +177,7 @@ public class TurretSubsystem extends SubsystemBase {
     // targetDegrees = (currentDegrees - tx) + (
     //   chassisOmegaDPS * totalLatency);
 
-    double angleMovingOffset = (chassisOmegaDPS.get() * totalLatency);
+    double angleMovingOffset = (chassisOmegaDPS * totalLatency);
 
     targetDegrees = MathUtil.inputModulus(degreesToHub - robotHeading, -80, 280) 
     - (angleMovingOffset)
@@ -166,8 +192,8 @@ public class TurretSubsystem extends SubsystemBase {
 
     Logger.recordOutput("turretPose2d", 
       new double[] {
-        turretPose2d.getX(), 
-        turretPose2d.getY(), 
+        turretFieldX, 
+        turretFieldY, 
         currentDegrees + robotHeading + 90
       }
     );

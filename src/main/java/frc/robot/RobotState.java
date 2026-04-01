@@ -187,6 +187,14 @@ public class RobotState {
         return Degrees.of(angleDegrees);
     }
 
+    public Angle getRobotToAllianceHubDegrees(double x, double y) {
+        double yError = Constants.PoseConstants.kCurrentAllianceHubTarget.get().getY() - y;
+        double xError = Constants.PoseConstants.kCurrentAllianceHubTarget.get().getX() - x;
+        Angle angleRadians = Radians.of(Math.atan2(yError,xError));
+        double angleDegrees = angleRadians.in(Degree) - 90;
+        return Degrees.of(angleDegrees);
+    }
+
     public Angle getTurretToAllianceHubDegrees() {
         
         Translation2d transform = new Translation2d(Inches.of(-7.75).in(Meters), Inches.of(5.5).in(Meters));
