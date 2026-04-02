@@ -92,7 +92,7 @@ public class Right_Middle2Cycle extends SequentialCommandGroup {
             intakePivot.goDown()
           )
         ),
-        AutoBuilder.followPath(RightCenter_Pickup2).raceWith(intake.runVolts(10.8)), //pickup and intake again
+        AutoBuilder.followPath(RightCenter_Pickup2).raceWith(intake.runVolts(10.56)), //pickup and intake again
         AutoBuilder.followPath(RightPickUp_RightTrench2), //go to shoot position again
         Commands.race( //shoot again
           superstructure.shoot(),
