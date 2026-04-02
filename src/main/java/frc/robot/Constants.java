@@ -92,11 +92,16 @@ public final class Constants {
     private static final Pose2d kHubTargetBlue = new Pose2d(4.620, 4.040, new Rotation2d());
     private static final Pose2d kHubTargetRed = new Pose2d(11.915, 4.040, new Rotation2d());
 
-    public static final Pose2d kStationTargetRed = new Pose2d(13.875, 6.257, new Rotation2d());
-    public static final Pose2d kStationTargetBlue = new Pose2d(1.816, 1.530, new Rotation2d());
-
     public static Supplier<Pose2d> kCurrentAllianceHubTarget = 
       () -> getAllianceColor() == Alliance.Blue ? kHubTargetBlue : kHubTargetRed;
+
+
+    private static final Pose2d kRightStationTargetRed = new Pose2d(14.811, 6.271, new Rotation2d());
+    private static final Pose2d kRightStationTargetBlue = new Pose2d(1.881, 1.835, new Rotation2d());
+
+    public static Supplier<Pose2d> kCurrentAllianceRightStationTarget = 
+      () -> getAllianceColor() == Alliance.Blue ? kRightStationTargetBlue : kRightStationTargetRed;
+
 
   }
   

@@ -83,7 +83,10 @@ public class Right_Middle2Cycle extends SequentialCommandGroup {
 
 
         Commands.parallel(
-          AutoBuilder.followPath(RightTrench_Center2), //go to center
+          Commands.race(
+            AutoBuilder.followPath(RightTrench_Center2), //go to center
+            hood.runToPositionCommand(0)
+          ),
           Commands.sequence(
             Commands.waitSeconds(0.5),
             intakePivot.goDown()

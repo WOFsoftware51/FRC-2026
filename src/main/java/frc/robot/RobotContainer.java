@@ -178,49 +178,7 @@ public class RobotContainer {
                         .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
                 )
             );
-            // driver.y().whileTrue(
-            //     swerve.applyRequest(() ->
-            //         poseTuning.withVelocityX(speedForward.get())
-            //             .withVelocityY(0) 
-            //             .withRotationalRate(0)
-            //     )
-            // );  
-            // driver.a().whileTrue(
-            //     swerve.applyRequest(() ->
-            //         poseTuning.withVelocityX(-speedBackward.get()) // Drive forward with negative Y (forward)
-            //             .withVelocityY(0) // Drive left with negative X (left)
-            //             .withRotationalRate(0) // Drive counterclockwise with negative X (left)
-            //     )
-            // );
-            // driver.leftTrigger().whileTrue(swerve.applyRequest(() -> brake));
-            // driver.y().whileTrue(swerve.applyRequest(() ->
-            //     point.withModuleDirection(new Rotation2d(0))
-            // ));
-            // driver.rightBumper().whileTrue(
-            //     new GoToPositionCommand(swerve, robotState, new Pose2d(new Translation2d(2, 4), 
-            //     new Rotation2d(Units.degreesToRadians(-90))), 1));
 
-            // driver.rightBumper().whileTrue(
-            // // driver.R1().whileTrue(
-            //     new MoveToAngle(
-            //         swerve, 
-            //         robotState, 
-            //         robotState.getPose2d(),
-            //         () -> robotState.justinTurretAngle(),
-            //         // () -> robotState.getRobotToAllianceHubDegrees(),
-            //         // () -> robotState.getTurretToAllianceHubDegrees(),
-            //         1
-            //     )
-            // );
-
-            // driver.leftBumper().whileTrue(
-            //     new GoToPositionCommand(
-            //         swerve, 
-            //         robotState, 
-            //         () -> new Pose2d(robotState.getPose2d().getTranslation(), new Rotation2d(robotState.getRobotToRedHubDegrees())),
-            //         1
-            //     )
-            // );
 
             new Trigger(() -> swerve.testConfigsChanged).onTrue(swerve.setDriveGains());
 
