@@ -66,6 +66,8 @@ public class IntakePivotIOHardware implements IntakePivotIO{
         motor.getConfigurator().apply(configs);
 
         canCoderConfigs.MagnetSensor.withSensorDirection(SensorDirectionValue.CounterClockwise_Positive);
+        canCoderConfigs.MagnetSensor.MagnetOffset = 0.277099609375;
+
         cancoder.getConfigurator().apply(canCoderConfigs);
 
         // cancoder.setPosition(0);

@@ -64,6 +64,7 @@ import frc.robot.subsystems.vision.VisionTurretSubsystem;
 import frc.robot.util.LoggedTunableNumber;
 
 public class RobotContainer {
+    public double Speedmodifier = 0.5;
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(1.2).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity: 0.8435211984 RPS
 
@@ -168,10 +169,11 @@ public class RobotContainer {
             // Note that X is defined as forward according to WPILib convention,
             // and Y is defined as to the left according to WPILib convention.
             swerve.setDefaultCommand(
+
                 // Drivetrain will execute this command periodically
                 swerve.applyRequest(() ->
-                    drive.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                        .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    drive.withVelocityX(-driver.getLeftY() * MaxSpeed * Speedmodifier) // Drive forward with negative Y (forward)
+                        .withVelocityY(-driver.getLeftX() * MaxSpeed * Speedmodifier) // Drive left with negative X (left)
                         .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
                 )
             );
@@ -224,11 +226,15 @@ public class RobotContainer {
             
             driver.start().onTrue(swerve.runOnce(() -> swerve.resetPose(new Pose2d())));
 
+            new Trigger(driver.rightTrigger()).onTrue(Commands.runOnce(() -> {Speedmodifier = 1.0;}));
+            new Trigger(driver.rightTrigger()).onFalse(Commands.runOnce(() -> {Speedmodifier = 0.5;}));
+
+
         /*
         Turret Controls
         */
             // turret.setDefaultCommand(turret.runVoltsJoystick(() -> joystick.getRightX()));
-            // turret.setDefaultCommand(new TurretCameraPoseDefaultCommand(turret));
+            turret.setDefaultCommand(new TurretCameraPoseDefaultCommand(turret));
             test.x().whileTrue(turret.TurretRunWithVolts(Volts.of(3))); //To the left
             test.b().whileTrue(turret.TurretRunWithVolts(Volts.of(-3))); //To the right
 
@@ -284,7 +290,7 @@ public class RobotContainer {
         /*
         Intake
         */
-            driver.leftBumper().whileTrue(intake.runVolts(10.8));
+            driver.leftBumper().whileTrue(intake.runVolts(10.56));
 
             
         /*
