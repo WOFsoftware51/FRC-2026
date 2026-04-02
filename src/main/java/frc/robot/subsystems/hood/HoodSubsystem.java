@@ -76,7 +76,7 @@ public class HoodSubsystem extends SubsystemBase{
 
     public Command treeMapRPMCommand() {
         return run(() ->
-            io.runSetpoint(Degrees.of(treeMap.get(Double.valueOf(robotState.getHubToTurret()))))
+            io.runSetpoint(Degrees.of(treeMap.get(Double.valueOf(robotState.getTurretToHub()))))
         );
     
     }

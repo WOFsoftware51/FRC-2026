@@ -84,7 +84,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         Logger.recordOutput("Shooter/chassisShootingSpeed", chassisShootingSpeed);
 
-        Logger.recordOutput("Shooter/TreeMap Angle", treeMap.get(Double.valueOf(RobotState.getInstance().getHubToTurret())));
+        Logger.recordOutput("Shooter/TreeMap Angle", treeMap.get(Double.valueOf(RobotState.getInstance().getTurretToHub())));
 
     }
 
@@ -95,7 +95,7 @@ public class ShooterSubsystem extends SubsystemBase {
                     RPM.of(
                         treeMap.get(
                             Double.valueOf(
-                                RobotState.getInstance().getHubToTurret()
+                                RobotState.getInstance().getTurretToHub()
                             )
                         )
                     )

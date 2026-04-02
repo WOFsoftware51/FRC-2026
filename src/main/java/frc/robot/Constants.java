@@ -92,6 +92,9 @@ public final class Constants {
     private static final Pose2d kHubTargetBlue = new Pose2d(4.620, 4.040, new Rotation2d());
     private static final Pose2d kHubTargetRed = new Pose2d(11.915, 4.040, new Rotation2d());
 
+    public static final Pose2d kStationTargetRed = new Pose2d(13.875, 6.257, new Rotation2d());
+    public static final Pose2d kStationTargetBlue = new Pose2d(1.816, 1.530, new Rotation2d());
+
     public static Supplier<Pose2d> kCurrentAllianceHubTarget = 
       () -> getAllianceColor() == Alliance.Blue ? kHubTargetBlue : kHubTargetRed;
 
@@ -123,7 +126,7 @@ public final class Constants {
     public static final double kGearRatio = 80.0;
     public static final double kCANCoderGearRatio = 2.0; //2x slower than givto
 
-    public static final double kCANCoderOffset = 0.150879;
+    public static final double kCANCoderOffset = 0.459473;
 
     public static final double kForwardLimit = 0.0;
     public static final double kReverseLimit = 0.0;
