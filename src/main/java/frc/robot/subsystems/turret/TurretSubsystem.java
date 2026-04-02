@@ -54,6 +54,12 @@ public class TurretSubsystem extends SubsystemBase {
 
   LoggedTunableNumber mainThreadLatency = new LoggedTunableNumber("mainThreadLatency", 0.07);
 
+  public static enum Targets {
+    Hub, 
+    Feed
+  }
+
+  public static Targets currentTarget = Targets.Hub;
 
   public TurretSubsystem(TurretIO io, VisionTurretSubsystem limelight, RobotState robotState) {
     this.io = io;
@@ -114,6 +120,24 @@ public class TurretSubsystem extends SubsystemBase {
       turretFieldY = robotY + tx * sin + ty * cos;
   }
 
+  private Angle getTurretToSetpointAngle(Pose2d setpoint) {
+    double yError = setpoint.getY() - turretFieldY;
+    double xError = setpoint.getX() - turretFieldX;
+    Angle angleRadians = Radians.of(Math.atan2(yError,xError));
+    double angleDegrees = angleRadians.in(Degree) - 90;
+    return Degrees.of(angleDegrees);
+
+  }
+
+  private Angle getTurretToSetpointAngle() {
+    double yError = Constants.PoseConstants.kStationTargetRed.getY() - turretFieldY;
+    double xError = Constants.PoseConstants.kStationTargetRed.getX() - turretFieldX;
+    Angle angleRadians = Radians.of(Math.atan2(yError,xError));
+    double angleDegrees = angleRadians.in(Degree) - 90;
+    return Degrees.of(angleDegrees);
+
+  }
+
   @Override
   public void periodic() {
     this.io.updateInputs(inputs);
@@ -134,9 +158,24 @@ public class TurretSubsystem extends SubsystemBase {
         Constants.PoseConstants.kCurrentAllianceHubTarget.get().getTranslation().getY()- 
         turretFieldY
       );
+    double turretToRightStation = 
+      Math.hypot(
+        Constants.PoseConstants.kCurrentAllianceHubTarget.get().getTranslation().getX()- 
+        turretFieldX, 
+        Constants.PoseConstants.kCurrentAllianceHubTarget.get().getTranslation().getY()- 
+        turretFieldY
+      );
 
-    robotState.setTurretToHub(turretToHubDistance);
-
+    if(currentTarget == Targets.Hub){
+      robotState.setTurretToHub(turretToHubDistance);
+    }
+    else if(currentTarget == Targets.Feed) {
+      robotState.setTurretToHub(turretToRightStation);
+    }
+    else {
+      robotState.setTurretToHub(turretToHubDistance);
+    }
+    
     robotState.setRobotToLimelight();
     
     visionLatency = ((limelight.inputs.tl + limelight.inputs.cl)/1000.0);
@@ -179,10 +218,23 @@ public class TurretSubsystem extends SubsystemBase {
 
     double angleMovingOffset = (chassisOmegaDPS * totalLatency);
 
-    targetDegrees = MathUtil.inputModulus(degreesToHub - robotHeading, -80, 280) 
-    - (angleMovingOffset)
-    + Units.radiansToDegrees(Math.atan((robotState.getTimeOfFlight()*turretVelY)/robotState.getTurretToHub()))
-    ;
+    if(currentTarget == Targets.Hub){
+      targetDegrees = MathUtil.inputModulus(degreesToHub - robotHeading, -80, 280) 
+        - (angleMovingOffset)
+        // + Units.radiansToDegrees(Math.atan((robotState.getTimeOfFlight()*turretVelY)/robotState.getTurretToHub()))
+      ;
+    }
+    else if(currentTarget == Targets.Feed) {
+      targetDegrees = MathUtil.inputModulus(getTurretToSetpointAngle().in(Degree) - robotHeading, -80, 280) 
+        - (angleMovingOffset)
+      ;
+    }
+    else {
+      targetDegrees = MathUtil.inputModulus(degreesToHub - robotHeading, -80, 280) 
+        - (angleMovingOffset)
+        // + Units.radiansToDegrees(Math.atan((robotState.getTimeOfFlight()*turretVelY)/robotState.getTurretToHub()))
+      ;
+    }
     
     Logger.recordOutput("turretToHubDistance", turretToHubDistance);
 

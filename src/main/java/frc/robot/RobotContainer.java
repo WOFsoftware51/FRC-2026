@@ -57,6 +57,7 @@ import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.turret.TurretIOHardware;
 import frc.robot.subsystems.turret.TurretIOSim;
 import frc.robot.subsystems.turret.TurretSubsystem;
+import frc.robot.subsystems.turret.TurretSubsystem.Targets;
 import frc.robot.subsystems.vision.VisionChassisSubsystem;
 import frc.robot.subsystems.vision.VisionIOHardware;
 import frc.robot.subsystems.vision.VisionIOSim;
@@ -229,6 +230,10 @@ public class RobotContainer {
         */
             // turret.setDefaultCommand(turret.runVoltsJoystick(() -> joystick.getRightX()));
             turret.setDefaultCommand(new TurretCameraPoseDefaultCommand(turret));
+
+            operator.rightTrigger().onTrue(Commands.runOnce(() -> turret.currentTarget = Targets.Hub));
+            operator.y().onTrue(Commands.runOnce(() -> turret.currentTarget = Targets.Feed));
+
             test.x().whileTrue(turret.TurretRunWithVolts(Volts.of(3))); //To the left
             test.b().whileTrue(turret.TurretRunWithVolts(Volts.of(-3))); //To the right
 
@@ -284,7 +289,7 @@ public class RobotContainer {
         /*
         Intake
         */
-            driver.leftBumper().whileTrue(intake.runVolts(10.8));
+            driver.leftBumper().whileTrue(intake.runVolts(10.56));
 
             
         /*
