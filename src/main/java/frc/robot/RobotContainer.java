@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Autons.Left_Center;
+import frc.robot.Autons.Left_Middle2Cycle;
 import frc.robot.Autons.Left_StopAtMiddle;
 import frc.robot.Autons.Right_Center;
 import frc.robot.Autons.Right_Middle2Cycle;
@@ -281,7 +282,8 @@ public class RobotContainer {
         a_chooser.addOption("Right_StopAtMiddle", 5);
         a_chooser.addOption("Right_Center (dont run yet)", 6);
         a_chooser.addOption("Right_Middle2Cycle", 7);
-        
+        a_chooser.addOption("Left_Middle2Cycle", 8);
+
     }
 
 
@@ -307,6 +309,8 @@ public class RobotContainer {
             
             case 7:
                 return new Right_Middle2Cycle(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure);
+            case 8:
+                return new Left_Middle2Cycle(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure);
                 
             default:
                 return new Test(swerve, robotState, shooter, intakePivot, intake, feeder, spindexer, hood, superstructure);

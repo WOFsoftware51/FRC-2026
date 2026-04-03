@@ -3,50 +3,50 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.295298013245033,
-        "y": 2.7790314569536427
+        "x": 7.61,
+        "y": 4.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.959799469356774,
-        "y": 1.4133968506614538
+        "x": 7.61,
+        "y": 6.22815601271999
       },
       "isLocked": false,
-      "linkedName": "Right Pickup2"
+      "linkedName": "LeftCenter_DriveBack6"
     },
     {
       "anchor": {
-        "x": 6.295298013245033,
-        "y": 0.65
+        "x": 6.549158345221112,
+        "y": 7.35
       },
       "prevControl": {
-        "x": 6.5452083979849895,
-        "y": 0.6566932502662783
+        "x": 7.81910696938766,
+        "y": 7.014593303420845
       },
       "nextControl": {
-        "x": 4.991985929909232,
-        "y": 0.6150939117319666
+        "x": 5.428069408886075,
+        "y": 7.646091298145506
       },
       "isLocked": false,
-      "linkedName": "Right Center2"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.536523178807947,
-        "y": 0.65
+        "x": 3.537,
+        "y": 7.35
       },
       "prevControl": {
-        "x": 3.9115648093755992,
-        "y": 0.6628987131074998
+        "x": 3.8441166951623753,
+        "y": 7.391206891341419
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Right Shoot"
+      "linkedName": "Left Shoot6"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.8005604857543152,
       "rotationDegrees": 0.0
     }
   ],
@@ -69,7 +69,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -89.64982811613112
   },
   "useDefaultConstraints": true
 }
