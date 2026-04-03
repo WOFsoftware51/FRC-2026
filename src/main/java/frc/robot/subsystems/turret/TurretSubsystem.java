@@ -130,8 +130,8 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private Angle getTurretToSetpointAngle() {
-    double yError = Constants.PoseConstants.kStationTargetRed.getY() - turretFieldY;
-    double xError = Constants.PoseConstants.kStationTargetRed.getX() - turretFieldX;
+    double yError = Constants.PoseConstants.kCurrentAllianceRightStationTarget.get().getY() - turretFieldY;
+    double xError = Constants.PoseConstants.kCurrentAllianceRightStationTarget.get().getX() - turretFieldX;
     Angle angleRadians = Radians.of(Math.atan2(yError,xError));
     double angleDegrees = angleRadians.in(Degree) - 90;
     return Degrees.of(angleDegrees);
@@ -158,22 +158,38 @@ public class TurretSubsystem extends SubsystemBase {
         Constants.PoseConstants.kCurrentAllianceHubTarget.get().getTranslation().getY()- 
         turretFieldY
       );
-    double turretToRightStation = 
+    double turretToHubDistanceFuture = 
       Math.hypot(
-        Constants.PoseConstants.kCurrentAllianceHubTarget.get().getTranslation().getX()- 
-        turretFieldX, 
+        Constants.PoseConstants.kCurrentAllianceHubTarget.get().getTranslation().getX() - 
+        turretFieldX
+        - turretVelX * robotState.getTimeOfFlight(), 
         Constants.PoseConstants.kCurrentAllianceHubTarget.get().getTranslation().getY()- 
         turretFieldY
+        - turretVelY * robotState.getTimeOfFlight()
       );
+    double turretToRightStation = 
+      Math.hypot(
+        Constants.PoseConstants.kCurrentAllianceRightStationTarget.get().getTranslation().getX()- 
+        turretFieldX, 
+        Constants.PoseConstants.kCurrentAllianceRightStationTarget.get().getTranslation().getY()- 
+        turretFieldY
+      )/6;
+    double turretToRightStationFuture = 
+      Math.hypot(
+        Constants.PoseConstants.kCurrentAllianceRightStationTarget.get().getTranslation().getX()- 
+        turretFieldX, 
+        Constants.PoseConstants.kCurrentAllianceRightStationTarget.get().getTranslation().getY()- 
+        turretFieldY
+      )/6;
 
     if(currentTarget == Targets.Hub){
-      robotState.setTurretToHub(turretToHubDistance);
+      robotState.setTurretToHub(turretToHubDistance, turretToHubDistanceFuture);
     }
     else if(currentTarget == Targets.Feed) {
-      robotState.setTurretToHub(turretToRightStation);
+      robotState.setTurretToHub(turretToRightStation, turretToRightStationFuture);
     }
     else {
-      robotState.setTurretToHub(turretToHubDistance);
+      robotState.setTurretToHub(turretToHubDistance, turretToHubDistanceFuture);
     }
     
     robotState.setRobotToLimelight();
@@ -221,7 +237,7 @@ public class TurretSubsystem extends SubsystemBase {
     if(currentTarget == Targets.Hub){
       targetDegrees = MathUtil.inputModulus(degreesToHub - robotHeading, -80, 280) 
         - (angleMovingOffset)
-        // + Units.radiansToDegrees(Math.atan((robotState.getTimeOfFlight()*turretVelY)/robotState.getTurretToHub()))
+        + Units.radiansToDegrees(Math.atan((robotState.getTimeOfFlight()*turretVelY)/robotState.getTurretToHub()))
       ;
     }
     else if(currentTarget == Targets.Feed) {
@@ -232,11 +248,11 @@ public class TurretSubsystem extends SubsystemBase {
     else {
       targetDegrees = MathUtil.inputModulus(degreesToHub - robotHeading, -80, 280) 
         - (angleMovingOffset)
-        // + Units.radiansToDegrees(Math.atan((robotState.getTimeOfFlight()*turretVelY)/robotState.getTurretToHub()))
+        + Units.radiansToDegrees(Math.atan((robotState.getTimeOfFlight()*turretVelY)/robotState.getTurretToHub()))
       ;
     }
     
-    Logger.recordOutput("turretToHubDistance", turretToHubDistance);
+    Logger.recordOutput("turretToHubDistance", robotState.getTurretToHub());
 
 
     robotState.setTurretTimeStamp(Timer.getFPGATimestamp(), currentDegrees);
@@ -245,7 +261,8 @@ public class TurretSubsystem extends SubsystemBase {
     Logger.recordOutput("turretPose2d", 
       new double[] {
         turretFieldX, 
-        turretFieldY, 
+        turretFieldY,
+        Inches.of(20).in(Meters),
         currentDegrees + robotHeading + 90
       }
     );

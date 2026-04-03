@@ -45,11 +45,12 @@ public class RobotState {
     private Pose2d chassisLimelightMegaTag2 = new Pose2d();
 
     private double hubToTurret;
+    private double hubToTurretFuture;
 
     private Translation3d robotToTurreTranslation3d = 
         new Translation3d(
             Inches.of(-5.5), 
-            Inches.of(-7.75), 
+            Inches.of(7.75), 
             Inches.of(16.09)
         );  
     
@@ -89,21 +90,21 @@ public class RobotState {
     InterpolatingDoubleTreeMap timeOfFlight = new InterpolatingDoubleTreeMap();
 
     private RobotState() {
-        timeOfFlight.put(Inches.of(68.2).in(Meters), 0.55);
+        timeOfFlight.put(Inches.of(68.2).in(Meters), 0.97);
         timeOfFlight.put(Inches.of(87.4).in(Meters), 0.65);
-        timeOfFlight.put(Inches.of(107.0).in(Meters), 0.75);
-        timeOfFlight.put(Inches.of(127.0).in(Meters), 0.85);
-        timeOfFlight.put(Inches.of(147.6).in(Meters), 0.95);
-        timeOfFlight.put(Inches.of(166.6).in(Meters), 1.05);
-        timeOfFlight.put(Inches.of(184.0).in(Meters), 1.15);
-        timeOfFlight.put(Inches.of(208.0).in(Meters), 1.30);
+        timeOfFlight.put(Inches.of(107.0).in(Meters), 1.16);
+        timeOfFlight.put(Inches.of(127.0).in(Meters), 1.26);
+        timeOfFlight.put(Inches.of(147.6).in(Meters), 1.4);
+        timeOfFlight.put(Inches.of(166.6).in(Meters), 1.31);
+        timeOfFlight.put(Inches.of(184.0).in(Meters), 1.37);
+        // timeOfFlight.put(Inches.of(208.0).in(Meters), 1.30);
     }
 
 
     public void setPose2d(Pose2d pose) {
         this.pose2d = pose;
     }
-    
+
     public Pose2d getPose2d() {
         return this.pose2d;
     }   
@@ -349,12 +350,17 @@ public class RobotState {
         return distance;
     }
 
-    public void setTurretToHub(double distance) {
+    public void setTurretToHub(double distance, double futureDistance) {
         this.hubToTurret = distance;
+        this.hubToTurretFuture = futureDistance;
     }
 
     public double getTurretToHub() {
         return this.hubToTurret;
+    }
+
+    public double getFutureTurretToHub() {
+        return hubToTurretFuture;
     }
 
     
