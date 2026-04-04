@@ -35,9 +35,10 @@ public interface IntakePivotIO {
     }
 
     void updateInputs(IntakePivotIOInputs inputs);
-    void runVolts(Voltage volts);
+    void runVolts(Voltage volts, boolean limitSwitchOn);
     void runSetpoint(Angle degrees);
     void resetEncoder();
+    void updateEncoder();
     void stop();
 
 }

@@ -107,9 +107,14 @@ public class IntakePivotIOHardware implements IntakePivotIO{
     }
 
     @Override
-    public void runVolts(Voltage volts) {
+    public void runVolts(Voltage volts, boolean limitSwitchOn) {
         double clampedEffort = MathUtil.clamp(volts.in(Volts), -12, 12);
-        motor.setControl(new VoltageOut(clampedEffort).withEnableFOC(true).withLimitForwardMotion(getLimitSwitch()));
+        if(limitSwitchOn){
+            motor.setControl(new VoltageOut(clampedEffort).withEnableFOC(true).withLimitForwardMotion(getLimitSwitch()));
+        }
+        else{
+            motor.setControl(new VoltageOut(clampedEffort).withEnableFOC(true));
+        }
     }
 
 
@@ -129,7 +134,7 @@ public class IntakePivotIOHardware implements IntakePivotIO{
 
     @Override
     public void stop() {
-        runVolts(Volts.zero());
+        runVolts(Volts.zero(), false);
     }
 
     private double getCANCoderRotations() {
@@ -137,7 +142,8 @@ public class IntakePivotIOHardware implements IntakePivotIO{
         return arm_CANcoder;
     }
 
-    private void updateEncoder(){
+    @Override
+    public void updateEncoder(){
         if(cancoder.isConnected()){
             motor.getConfigurator().setPosition(((getCANCoderRotations()-Constants.IntakePivotConstants.kCANCoderOffset)/Constants.IntakePivotConstants.kCANCoderGearRatio)*Constants.IntakePivotConstants.kGearRatio);
         }

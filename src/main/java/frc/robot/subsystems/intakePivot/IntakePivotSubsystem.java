@@ -25,7 +25,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
   
   public Command runVoltsJoystick(DoubleSupplier volts) {
     return run(() -> 
-      io.runVolts(Volts.of(volts.getAsDouble()*12))
+      io.runVolts(Volts.of(volts.getAsDouble()*12), false)
     )
     .finallyDo(() ->
       io.stop()
@@ -35,11 +35,12 @@ public class IntakePivotSubsystem extends SubsystemBase {
   public Command goDown() {
     return run(() ->
       {
+        
         if(inputs.position.in(Degrees) < -30) {
-          io.runVolts(Volts.of(8));
+          io.runVolts(Volts.of(8), true);
         }
         else {
-          io.runVolts(Volts.of(4));
+          io.runVolts(Volts.of(4), true);
         }
 
       }
@@ -51,10 +52,10 @@ public class IntakePivotSubsystem extends SubsystemBase {
     return run(() ->
       {
         if(up) {
-          io.runVolts(Volts.of(-4));
+          io.runVolts(Volts.of(-4), true);
         }
         else if(!up){
-          io.runVolts(Volts.of(4));
+          io.runVolts(Volts.of(4), true);
         }
       }
     );
@@ -63,7 +64,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
 
   public Command runVolts(double volts) {
     return run(() ->
-      io.runVolts(Volts.of(volts))
+      io.runVolts(Volts.of(volts), true)
     )
     .finallyDo(() ->
       io.stop()
@@ -96,6 +97,10 @@ public class IntakePivotSubsystem extends SubsystemBase {
       up = false;
     }
 
+
+    if(inputs.limitSwitchBoolean) {
+      io.updateEncoder();
+    }
 
 
   }

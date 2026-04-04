@@ -66,10 +66,11 @@ public class Left_Middle2Cycle extends SequentialCommandGroup {
           Commands.sequence(
             Commands.waitSeconds(0.25),
             intakePivot.goDown(), 
-            intake.runVolts(10.8)
-          )
+            Commands.waitSeconds(5)
+          ),
+          intake.runVolts(10.8)
         ),
-        // AutoBuilder.followPath(RightCenter_Pickup).raceWith(intake.runVolts(10.8)), //pickup and intake
+
         AutoBuilder.followPath(LeftPickUp_LeftTrench6), //go to shoot position
         Commands.race( //shoot
           superstructure.shoot(),

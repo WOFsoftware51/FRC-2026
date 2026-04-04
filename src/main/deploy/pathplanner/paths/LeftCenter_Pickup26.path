@@ -12,7 +12,7 @@
         "y": 6.400000000000002
       },
       "isLocked": false,
-      "linkedName": "Left Center6"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Left Pickup6"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],

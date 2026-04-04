@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,6 +19,8 @@ public class ShooterSubsystem extends SubsystemBase {
     ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
     private InterpolatingDoubleTreeMap treeMap = new InterpolatingDoubleTreeMap();
+
+    private double autonOffset = 0;
 
     LoggedTunableNumber shooterRPM = new LoggedTunableNumber("Shooter/speed", 3000);
     
@@ -79,8 +82,18 @@ public class ShooterSubsystem extends SubsystemBase {
             chassisShootingSpeed = 1.0;
         }
 
+        if(DriverStation.isAutonomous()) {
+            autonOffset = 50;
+        }
+        else{
+            autonOffset = 0;
+        }
+
         
         Logger.processInputs("Shooter", inputs);
+
+        Logger.recordOutput("Shooter/atRPM", atRPM);
+        Logger.recordOutput("Shooter/autonOffset", autonOffset);
 
         Logger.recordOutput("Shooter/chassisShootingSpeed", chassisShootingSpeed);
 
@@ -97,8 +110,10 @@ public class ShooterSubsystem extends SubsystemBase {
                             Double.valueOf(
                                 RobotState.getInstance().getTurretToHub()
                             )
+                            +
+                            autonOffset
                         )
-                    )
+                    ) 
                 );
 
 

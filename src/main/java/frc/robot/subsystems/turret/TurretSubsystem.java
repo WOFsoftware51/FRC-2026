@@ -56,10 +56,11 @@ public class TurretSubsystem extends SubsystemBase {
 
   public static enum Targets {
     Hub, 
-    Feed
+    Feed, 
+    Locked
   }
 
-  public static Targets currentTarget = Targets.Hub;
+  public Targets currentTarget = Targets.Hub;
 
   public TurretSubsystem(TurretIO io, VisionTurretSubsystem limelight, RobotState robotState) {
     this.io = io;
@@ -244,6 +245,9 @@ public class TurretSubsystem extends SubsystemBase {
       targetDegrees = MathUtil.inputModulus(getTurretToSetpointAngle().in(Degree) - robotHeading, -80, 280) 
         - (angleMovingOffset)
       ;
+    }
+    else if(currentTarget == Targets.Locked) {
+      io.stop();
     }
     else {
       targetDegrees = MathUtil.inputModulus(degreesToHub - robotHeading, -80, 280) 

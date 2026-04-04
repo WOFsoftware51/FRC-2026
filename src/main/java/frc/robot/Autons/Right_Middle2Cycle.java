@@ -66,8 +66,9 @@ public class Right_Middle2Cycle extends SequentialCommandGroup {
           Commands.sequence(
             Commands.waitSeconds(0.25),
             intakePivot.goDown(), 
-            intake.runVolts(10.8)
-          )
+            Commands.waitSeconds(5)
+          ),
+          intake.runVolts(10.8)
         ),
         // AutoBuilder.followPath(RightCenter_Pickup).raceWith(intake.runVolts(10.8)), //pickup and intake
         AutoBuilder.followPath(RightPickUp_RightTrench), //go to shoot position

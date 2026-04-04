@@ -70,6 +70,7 @@ public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(1.2).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity: 0.8435211984 RPS
 
+
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -199,6 +200,8 @@ public class RobotContainer {
             operator.rightTrigger().onTrue(Commands.runOnce(() -> turret.currentTarget = Targets.Hub));
             operator.y().onTrue(Commands.runOnce(() -> turret.currentTarget = Targets.Feed));
 
+            driver.rightBumper().whileTrue(turret.TurretRunWithVolts(Volts.of(0)));
+
             test.x().whileTrue(turret.TurretRunWithVolts(Volts.of(3))); //To the left
             test.b().whileTrue(turret.TurretRunWithVolts(Volts.of(-3))); //To the right
 
@@ -274,8 +277,8 @@ public class RobotContainer {
 
     public void printAutons(){
         SmartDashboard.putData("Auton", a_chooser);
-        a_chooser.setDefaultOption("test", 1);
-        a_chooser.addOption("test", 1);
+        a_chooser.setDefaultOption("Do Nothing", 3);
+        // a_chooser.addOption("test", 1);
         a_chooser.addOption("Left_Center (dont run yet unless you wanna yolo)", 2);
         a_chooser.addOption("Do Nothing", 3);
         a_chooser.addOption("Left_StopAtMiddle", 4);
@@ -299,10 +302,10 @@ public class RobotContainer {
                 return new doNOTHING(swerve);
 
             case 4:
-                return new Left_StopAtMiddle(superstructure);
+                return new Left_StopAtMiddle(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure);
 
             case 5:
-                return new Right_StopAtMiddle(superstructure);
+                return new Right_StopAtMiddle(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure);
                 
             case 6:
                 return new Right_Center(swerve, robotState, shooter, intakePivot, intake, feeder, spindexer, hood, superstructure);
