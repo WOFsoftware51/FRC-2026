@@ -85,7 +85,7 @@ public class ShooterSubsystem extends SubsystemBase {
         if(DriverStation.isAutonomous()) {
             autonOffset = 50;
         }
-        else{
+        else {
             autonOffset = 0;
         }
 

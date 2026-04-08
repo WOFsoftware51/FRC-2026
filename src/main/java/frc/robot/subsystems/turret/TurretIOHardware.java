@@ -36,11 +36,18 @@ public class TurretIOHardware implements TurretIO {
 
     configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-    configs.Slot0.kP = 1.0;
+    // configs.Slot0.kP = 1.0;
+    // configs.Slot0.kI = 0.0;
+    // configs.Slot0.kD = 0.05;
+    // configs.Slot0.kS = 0.9;
+    // configs.Slot0.kV = 0.094;
+    // configs.Slot0.kA = 0.0;
+
+    configs.Slot0.kP = 3.0;
     configs.Slot0.kI = 0.0;
-    configs.Slot0.kD = 0.05;
-    configs.Slot0.kS = 0.9;
-    configs.Slot0.kV = 0.094;
+    configs.Slot0.kD = 0.0;
+    configs.Slot0.kS = 0.5;
+    configs.Slot0.kV = 0.11429443210363388;
     configs.Slot0.kA = 0.0;
 
     configs.ClosedLoopGeneral.ContinuousWrap = false;

@@ -205,7 +205,8 @@ public class RobotContainer {
             test.x().whileTrue(turret.TurretRunWithVolts(Volts.of(3))); //To the left
             test.b().whileTrue(turret.TurretRunWithVolts(Volts.of(-3))); //To the right
 
-            test.povDown().whileTrue(turret.resetEncoder());
+            // test.povDown().whileTrue(turret.resetEncoder());
+            test.povDown().whileTrue(turret.TurretToSetpointCommand(Degrees.of(0)));
 
 
         /*
