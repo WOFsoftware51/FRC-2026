@@ -178,15 +178,15 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
         boolean didItWork = false;
   
-        // if(limelightTurret.inputs.tv) {
-        //     addVisionMeasurement(
-        //         robotState.getTurretLimelightMegaTag2(), 
-        //         // robotState.getTurretLimelightPose2d(), 
-        //         visionTimeStamp,
-        //         visionSTDMatrix
-        //     );
-        //     didItWork = true;
-        // }
+        if(limelightTurret.inputs.tv) {
+            addVisionMeasurement(
+                robotState.getTurretLimelightMegaTag2(), 
+                // robotState.getTurretLimelightPose2d(), 
+                visionTimeStampTurret,
+                visionSTDMatrixTurret
+            );
+            didItWork = true;
+        }
 
         if(limelightChassis.inputs.tv) {
             addVisionMeasurement(
@@ -263,6 +263,9 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         testCameraPose = new Pose3d(robotState.getPose2d()).plus(new Transform3d(robotState.getRobotToLimelight().getTranslation(), robotState.getRobotToLimelight().getRotation()));
 
         Logger.recordOutput("Limelight Transform", testCameraPose);
+
+        Logger.recordOutput("RobotState/ChassisSpeeds/Stator Current", this.getModule(1).getDriveMotor().getStatorCurrent().getValueAsDouble());
+        Logger.recordOutput("RobotState/ChassisSpeeds/Supply Current", this.getModule(1).getDriveMotor().getSupplyCurrent().getValueAsDouble());
     }
 
     

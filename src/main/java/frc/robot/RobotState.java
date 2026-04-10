@@ -67,14 +67,14 @@ public class RobotState {
     private Rotation3d rotatedAngle = new Rotation3d();
 
     private Transform3d turretToLimelight = new Transform3d(
-        new Translation3d(  //TODO
+        new Translation3d(  
             Inches.of(6.58), 
             Inches.of(0), 
             Inches.of(4.8)
         ),
-        new Rotation3d(  //TODO
-            Degrees.of(0), 
-            Degrees.of(14.5), 
+        new Rotation3d(  
+            Degrees.of(1), 
+            Degrees.of(14), 
             Degrees.of(0)
         )
     );
