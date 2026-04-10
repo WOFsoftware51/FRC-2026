@@ -64,7 +64,6 @@ import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.turret.TurretIOHardware;
 import frc.robot.subsystems.turret.TurretIOSim;
 import frc.robot.subsystems.turret.TurretSubsystem;
-import frc.robot.subsystems.turret.TurretSubsystem.Targets;
 import frc.robot.subsystems.vision.VisionChassisSubsystem;
 import frc.robot.subsystems.vision.VisionIOHardware;
 import frc.robot.subsystems.vision.VisionIOSim;
@@ -189,6 +188,23 @@ public class RobotContainer {
                         .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
                 )
             );
+            // driver.x().whileTrue(              
+            //     swerve.applyRequest(() ->
+            //         poseTuning
+            //             .withVelocityY(1)
+            //             .withVelocityX(0)
+            //             .withRotationalRate(0)
+            //     )
+            // );
+            // driver.b().whileTrue(              
+            //     swerve.applyRequest(() ->
+            //         poseTuning
+            //             .withVelocityY(-1)
+            //             .withVelocityX(0)
+            //             .withRotationalRate(0)
+            //     )
+            // );
+            
 
 
             new Trigger(() -> swerve.testConfigsChanged).onTrue(swerve.setDriveGains());
@@ -206,8 +222,8 @@ public class RobotContainer {
             // turret.setDefaultCommand(turret.runVoltsJoystick(() -> joystick.getRightX()));
             turret.setDefaultCommand(new TurretCameraPoseDefaultCommand(turret));
 
-            operator.rightTrigger().onTrue(Commands.runOnce(() -> turret.currentTarget = Targets.Hub));
-            operator.y().onTrue(Commands.runOnce(() -> turret.currentTarget = Targets.Feed));
+            operator.rightTrigger().onTrue(Commands.runOnce(() -> robotState.currentTarget = Targets.Hub));
+            operator.y().onTrue(Commands.runOnce(() -> robotState.currentTarget = Targets.Feed));
 
             driver.rightBumper().whileTrue(turret.TurretRunWithVolts(Volts.of(0)));
 
@@ -222,18 +238,18 @@ public class RobotContainer {
         Shooter Controls
         */
             new Trigger(() -> shooter.gainsChanged).whileTrue(shooter.updateGainsCommand());
-            // driver.rightTrigger().whileTrue(shooter.runRPMCommand());
+            // operator.rightTrigger().whileTrue(shooter.runRPMCommand());
             operator.rightTrigger().whileTrue(shooter.treeMapRPMCommand());
-            operator.y().whileTrue(shooter.runRPMCommand(3500));
+            operator.y().whileTrue(shooter.treeMapRPMCommand());
+            // operator.y().whileTrue(shooter.runRPMCommand());
             
 
         /*
         Hood Controls
         */
             hood.setDefaultCommand(Commands.run(() -> hood.runToPosition(), hood));
-            // hood.setDefaultCommand(hood.treeMapRPMCommand());
-            operator.rightTrigger().whileTrue(hood.treeMapRPMCommand());
-            operator.y().whileTrue(hood.runToPositionCommand(15));
+            // operator.rightTrigger().whileTrue(hood.treeMapRPMCommand());
+            operator.y().whileTrue(hood.treeMapRPMCommand());
 
             joystick.y().whileTrue(hood.runVolts(2));
             joystick.a().whileTrue(hood.runVolts(-2));

@@ -100,6 +100,15 @@ public class RobotState {
         // timeOfFlight.put(Inches.of(208.0).in(Meters), 1.30);
     }
 
+    public static enum Targets {
+        Hub, 
+        Feed, 
+        Locked
+    }
+
+    public Targets currentTarget = Targets.Hub;
+
+
 
     public void setPose2d(Pose2d pose) {
         this.pose2d = pose;
@@ -366,5 +375,12 @@ public class RobotState {
     
     public double getTimeOfFlight() {
         return timeOfFlight.get(getTurretToHub());
+    }
+
+    public void setCurrentTarget(Targets target) {
+        currentTarget = target;
+    }
+    public Targets getCurrentTarget() {
+        return currentTarget;
     }
 }
