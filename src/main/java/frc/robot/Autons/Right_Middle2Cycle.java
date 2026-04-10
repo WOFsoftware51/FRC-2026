@@ -9,6 +9,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Paths;
 import frc.robot.RobotState;
 import frc.robot.commands.factories.Superstructure;
 import frc.robot.subsystems.Swerve;
@@ -35,34 +36,21 @@ public class Right_Middle2Cycle extends SequentialCommandGroup {
       FeederSubsystem feeder, 
       SpindexerSubsystem spindexer, 
       HoodSubsystem hood, 
-      Superstructure superstructure
+      Superstructure superstructure, 
+      Paths Paths
   ) 
   {
-    PathPlannerPath RightTrench_Center;
-    // PathPlannerPath RightCenter_Pickup;
-    PathPlannerPath RightPickUp_RightTrench;
-    PathPlannerPath RightTrench_Center2;
-    PathPlannerPath RightCenter_Pickup2;
-    PathPlannerPath RightPickUp_RightTrench2;
-    PathPlannerPath emptyRightTrench;
 
     try {
-      RightTrench_Center = PathPlannerPath.fromPathFile("RightTrench_Center");
-      // RightCenter_Pickup = PathPlannerPath.fromPathFile("RightCenter_Pickup");
-      RightPickUp_RightTrench = PathPlannerPath.fromPathFile("RightPickUp_RightTrench");
-      RightTrench_Center2 = PathPlannerPath.fromPathFile("RightTrench_Center2");
-      RightCenter_Pickup2 = PathPlannerPath.fromPathFile("RightCenter_Pickup2");
-      RightPickUp_RightTrench2 = PathPlannerPath.fromPathFile("RightPickUp_RightTrench2");
-      emptyRightTrench = PathPlannerPath.fromPathFile("emptyRightTrench");
 
       addCommands(
-        AutoBuilder.resetOdom(RightTrench_Center.getStartingHolonomicPose().get()),
+        AutoBuilder.resetOdom(Paths.RightTrench_Center.getStartingHolonomicPose().get()),
         Commands.parallel(
-          AutoBuilder.followPath(emptyRightTrench),
+          AutoBuilder.followPath(Paths.emptyRightTrench),
           shooter.runRPMCommand(3000).withTimeout(0.05)
         ),
         Commands.race(
-          AutoBuilder.followPath(RightTrench_Center), //go to center
+          AutoBuilder.followPath(Paths.RightTrench_Center), //go to center
           Commands.sequence(
             Commands.waitSeconds(0.25),
             intakePivot.goDown(), 
@@ -71,7 +59,7 @@ public class Right_Middle2Cycle extends SequentialCommandGroup {
           intake.runVolts(10.8)
         ),
         // AutoBuilder.followPath(RightCenter_Pickup).raceWith(intake.runVolts(10.8)), //pickup and intake
-        AutoBuilder.followPath(RightPickUp_RightTrench), //go to shoot position
+        AutoBuilder.followPath(Paths.RightPickUp_RightTrench), //go to shoot position
         Commands.race( //shoot
           superstructure.shoot(),
           Commands.run(() -> turret.turretCameraAimToHub()),
@@ -85,7 +73,7 @@ public class Right_Middle2Cycle extends SequentialCommandGroup {
 
         Commands.parallel(
           Commands.race(
-            AutoBuilder.followPath(RightTrench_Center2), //go to center
+            AutoBuilder.followPath(Paths.RightTrench_Center2), //go to center
             hood.runToPositionCommand(0)
           ),
           Commands.sequence(
@@ -93,8 +81,8 @@ public class Right_Middle2Cycle extends SequentialCommandGroup {
             intakePivot.goDown()
           )
         ),
-        AutoBuilder.followPath(RightCenter_Pickup2).raceWith(intake.runVolts(10.56)), //pickup and intake again
-        AutoBuilder.followPath(RightPickUp_RightTrench2), //go to shoot position again
+        AutoBuilder.followPath(Paths.RightCenter_Pickup2).raceWith(intake.runVolts(10.56)), //pickup and intake again
+        AutoBuilder.followPath(Paths.RightPickUp_RightTrench2), //go to shoot position again
         Commands.race( //shoot again
           superstructure.shoot(),
           Commands.run(() -> turret.turretCameraAimToHub()),

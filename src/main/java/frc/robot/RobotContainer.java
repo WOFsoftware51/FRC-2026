@@ -10,8 +10,13 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.io.IOException;
+
+import org.json.simple.parser.ParseException;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.util.FileVersionException;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -24,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.RobotState.Targets;
 import frc.robot.Autons.Left_Center;
 import frc.robot.Autons.Left_Middle2Cycle;
 import frc.robot.Autons.Left_StopAtMiddle;
@@ -104,6 +110,7 @@ public class RobotContainer {
     private final IntakeSubsystem intake;
     private final IntakePivotSubsystem intakePivot;
     private final Superstructure superstructure;
+    private final Paths path;
 
     private boolean operatorRumble = false;
     
@@ -160,6 +167,8 @@ public class RobotContainer {
         );
         
         this.superstructure = new Superstructure(swerve, intake, intakePivot, spindexer, feeder, turret, shooter, hood);
+
+        this.path = new Paths();
 
         configureBindings();
         printAutons();
@@ -312,7 +321,7 @@ public class RobotContainer {
                 return new Right_Center(swerve, robotState, shooter, intakePivot, intake, feeder, spindexer, hood, superstructure);
             
             case 7:
-                return new Right_Middle2Cycle(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure);
+                return new Right_Middle2Cycle(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure, path);
             case 8:
                 return new Left_Middle2Cycle(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure);
                 
