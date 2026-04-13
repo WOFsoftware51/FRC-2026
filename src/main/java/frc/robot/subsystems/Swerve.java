@@ -183,6 +183,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                 robotState.getTurretLimelightMegaTag2(), 
                 // robotState.getTurretLimelightPose2d(), 
                 visionTimeStampTurret,
+                // robotState.getTurretTimeStamp(visionTimeStampTurret),
                 visionSTDMatrixTurret
             );
             didItWork = true;
@@ -229,12 +230,19 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             getState().Speeds.vyMetersPerSecond * 
             getState().Pose.getRotation().getCos();
 
-        fieldRelativeChassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-            fieldVx,
-            fieldVy,
+        // fieldRelativeChassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+        //     fieldVx,
+        //     fieldVy,
+        //     getState().Speeds.omegaRadiansPerSecond,
+        //     getState().Pose.getRotation()
+        // );
+        fieldRelativeChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
+            getState().Speeds.vxMetersPerSecond,
+            getState().Speeds.vyMetersPerSecond,
             getState().Speeds.omegaRadiansPerSecond,
             getState().Pose.getRotation()
         );
+        // Logger.recordOutput("Swerve/fieldRelativeChassisSpeeds", fieldRelativeChassisSpeeds);
         
         robotState.setChassisSpeeds(getState().Speeds, fieldRelativeChassisSpeeds);
         Logger.recordOutput("Swerve/AngularSpeeds", getState().Speeds.omegaRadiansPerSecond);

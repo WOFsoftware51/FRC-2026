@@ -9,7 +9,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Paths;
+import frc.robot.PathPlannerPaths;
 import frc.robot.RobotState;
 import frc.robot.commands.factories.Superstructure;
 import frc.robot.subsystems.Swerve;
@@ -37,7 +37,7 @@ public class Right_Middle2Cycle extends SequentialCommandGroup {
       SpindexerSubsystem spindexer, 
       HoodSubsystem hood, 
       Superstructure superstructure, 
-      Paths Paths
+      PathPlannerPaths Paths
   ) 
   {
 

@@ -39,6 +39,7 @@ public class HoodSubsystem extends SubsystemBase{
         treeMapFeed.put(Meters.of(4.03).in(Meters), 10.0);
         treeMapFeed.put(Meters.of(5.70).in(Meters), 15.0);
         treeMapFeed.put(Meters.of(7.03).in(Meters), 16.0);
+        treeMapFeed.put(Feet.of(27).in(Meters), 20.5);
 
     }
 
@@ -57,7 +58,7 @@ public class HoodSubsystem extends SubsystemBase{
 
 
         if(RobotState.getInstance().getCurrentTarget() == Targets.Hub) {
-            currentTarget = treeMap.get(Double.valueOf(RobotState.getInstance().getTurretToHub()));
+            currentTarget = treeMap.get(Double.valueOf(RobotState.getInstance().getFutureTurretToHub()));
 
         }
         else if(RobotState.getInstance().getCurrentTarget() == Targets.Feed) {

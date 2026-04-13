@@ -56,6 +56,8 @@ public class ShooterSubsystem extends SubsystemBase {
         treeMapFeed.put(Meters.of(4.03).in(Meters), 2400.0);
         treeMapFeed.put(Meters.of(5.70).in(Meters), 2900.0);
         treeMapFeed.put(Meters.of(7.03).in(Meters), 3250.0);
+        treeMapFeed.put(Feet.of(27.0).in(Meters), 5000.0);
+
 
     }
 
@@ -101,11 +103,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
 
         if(RobotState.getInstance().getCurrentTarget() == Targets.Hub) {
-            currentTarget = treeMap.get(Double.valueOf(RobotState.getInstance().getTurretToHub()));
+            currentTarget = treeMap.get(Double.valueOf(RobotState.getInstance().getFutureTurretToHub()));
 
         }
         else if(RobotState.getInstance().getCurrentTarget() == Targets.Feed) {
-            currentTarget = treeMapFeed.get(Double.valueOf(RobotState.getInstance().getTurretToHub()));
+            currentTarget = treeMapFeed.get(Double.valueOf(RobotState.getInstance().getFutureTurretToHub()));
         }
 
         

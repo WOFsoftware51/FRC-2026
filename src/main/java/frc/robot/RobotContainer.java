@@ -73,7 +73,7 @@ import frc.robot.util.LoggedTunableNumber;
 public class RobotContainer {
     public double Speedmodifier = 0.5;
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(1.2).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity: 0.8435211984 RPS
+    private double MaxAngularRate = RotationsPerSecond.of(1.0).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity: 0.8435211984 RPS
 
 
     /* Setting up bindings for necessary control of the swerve drive platform */
@@ -109,7 +109,7 @@ public class RobotContainer {
     private final IntakeSubsystem intake;
     private final IntakePivotSubsystem intakePivot;
     private final Superstructure superstructure;
-    private final Paths path;
+    private final PathPlannerPaths path;
 
     private boolean operatorRumble = false;
     
@@ -167,7 +167,7 @@ public class RobotContainer {
         
         this.superstructure = new Superstructure(swerve, intake, intakePivot, spindexer, feeder, turret, shooter, hood);
 
-        this.path = new Paths();
+        this.path = new PathPlannerPaths();
 
         configureBindings();
         printAutons();
@@ -248,7 +248,7 @@ public class RobotContainer {
         Hood Controls
         */
             hood.setDefaultCommand(Commands.run(() -> hood.runToPosition(), hood));
-            // operator.rightTrigger().whileTrue(hood.treeMapRPMCommand());
+            operator.rightTrigger().whileTrue(hood.treeMapRPMCommand());
             operator.y().whileTrue(hood.treeMapRPMCommand());
 
             joystick.y().whileTrue(hood.runVolts(2));

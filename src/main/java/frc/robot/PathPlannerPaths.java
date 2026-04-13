@@ -7,7 +7,7 @@ import org.json.simple.parser.ParseException;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
 
-public class Paths {
+public class PathPlannerPaths {
     public PathPlannerPath RightTrench_Center;
     public PathPlannerPath RightPickUp_RightTrench;
     public PathPlannerPath RightTrench_Center2;
@@ -15,7 +15,7 @@ public class Paths {
     public PathPlannerPath RightPickUp_RightTrench2;
     public PathPlannerPath emptyRightTrench;
 
-    public Paths() {
+    public PathPlannerPaths() {
         try {
             RightTrench_Center = PathPlannerPath.fromPathFile("RightTrench_Center");
             // RightCenter_Pickup = PathPlannerPath.fromPathFile("RightCenter_Pickup");
