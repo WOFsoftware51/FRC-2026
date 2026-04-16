@@ -85,8 +85,14 @@ public class TurretSubsystem extends SubsystemBase {
     // double sin = Math.sin(angle);
     // turretVelFieldX = vx * cos - vy * sin;
     // turretVelFieldY = vx * sin + vy * cos;
-    turretVelFieldX = vx;
-    turretVelFieldY = vy;
+    // double vOmegaX = 
+    //   (Units.inchesToMeters(9.5032889044) * robotState.getChassisSpeeds().omegaRadiansPerSecond) * Math.cos(robotState.getPose2d().getRotation().getRadians());
+
+    // double vOmegaY = 
+    //   (Units.inchesToMeters(9.5032889044) * robotState.getChassisSpeeds().omegaRadiansPerSecond) * Math.sin(robotState.getPose2d().getRotation().getRadians());
+    
+    turretVelFieldX = vx; // + vOmegaX;
+    turretVelFieldY = vy; // + vOmegaY;
 
     Logger.recordOutput("Turret/vx", robotState.getFieldRelativeChassisSpeeds().vxMetersPerSecond);
   }
@@ -143,8 +149,8 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private Angle getTurretToRightStation() {
-    double yError = Constants.PoseConstants.kCurrentAllianceRightStationTarget.get().getY() - turretFieldY;
-    double xError = Constants.PoseConstants.kCurrentAllianceRightStationTarget.get().getX() - turretFieldX;
+    double yError = Constants.PoseConstants.kCurrentAllianceRightStationTarget.get().getY() - turretFieldYFuture;
+    double xError = Constants.PoseConstants.kCurrentAllianceRightStationTarget.get().getX() - turretFieldXFuture;
     Angle angleRadians = Radians.of(Math.atan2(yError,xError));
     double angleDegrees = angleRadians.in(Degree) - 90;
     return Degrees.of(angleDegrees);
@@ -152,8 +158,8 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   private Angle getTurretToLeftStation() {
-    double yError = Constants.PoseConstants.kCurrentAllianceLeftStationTarget.get().getY() - turretFieldY;
-    double xError = Constants.PoseConstants.kCurrentAllianceLeftStationTarget.get().getX() - turretFieldX;
+    double yError = Constants.PoseConstants.kCurrentAllianceLeftStationTarget.get().getY() - turretFieldYFuture;
+    double xError = Constants.PoseConstants.kCurrentAllianceLeftStationTarget.get().getX() - turretFieldXFuture;
     Angle angleRadians = Radians.of(Math.atan2(yError,xError));
     double angleDegrees = angleRadians.in(Degree) - 90;
     return Degrees.of(angleDegrees);

@@ -62,7 +62,7 @@ public class HoodSubsystem extends SubsystemBase{
 
         }
         else if(RobotState.getInstance().getCurrentTarget() == Targets.Feed) {
-            currentTarget = treeMapFeed.get(Double.valueOf(RobotState.getInstance().getTurretToHub()));
+            currentTarget = treeMapFeed.get(Double.valueOf(RobotState.getInstance().getFutureTurretToHub()));
         }
 
         Logger.recordOutput("Hood/TreeMap Angle", currentTarget);

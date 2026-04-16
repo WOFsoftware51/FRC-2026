@@ -49,7 +49,7 @@ public class RobotState {
     private double hubToTurret;
     private double hubToTurretFuture;
 
-    private Translation3d robotToTurreTranslation3d = 
+    private Translation3d robotToTurretTranslation3d = 
         new Translation3d(
             Inches.of(-5.5), 
             Inches.of(7.75), 
@@ -57,7 +57,7 @@ public class RobotState {
         );  
     
     private Transform3d robotToTurret = new Transform3d(
-        robotToTurreTranslation3d,
+        robotToTurretTranslation3d,
         new Rotation3d(
             0,
             0,
@@ -340,7 +340,7 @@ public class RobotState {
 
     public void setRobotToTurret(double turretYawDegrees) {
         robotToTurret = new Transform3d(
-            robotToTurreTranslation3d,
+            robotToTurretTranslation3d,
             new Rotation3d(  //TODO
                 Degrees.of(0), 
                 Degrees.of(0), 
