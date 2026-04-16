@@ -9,6 +9,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.PathPlannerPaths;
 import frc.robot.RobotState;
 import frc.robot.commands.factories.Superstructure;
 import frc.robot.subsystems.Swerve;
@@ -35,34 +36,19 @@ public class Left_Middle2Cycle extends SequentialCommandGroup {
       FeederSubsystem feeder, 
       SpindexerSubsystem spindexer, 
       HoodSubsystem hood, 
-      Superstructure superstructure
+      Superstructure superstructure, 
+      PathPlannerPaths Paths
   ) 
   {
-    PathPlannerPath LeftTrench_Center6;
-    // PathPlannerPath RightCenter_Pickup;
-    PathPlannerPath LeftPickUp_LeftTrench6;
-    PathPlannerPath LeftTrench_Center26;
-    PathPlannerPath LeftCenter_Pickup26;
-    PathPlannerPath LeftPickUp_LeftTrench26;
-    PathPlannerPath emptyLeftTrench6;
-
     try {
-      LeftTrench_Center6 = PathPlannerPath.fromPathFile("LeftTrench_Center6");
-      // RightCenter_Pickup = PathPlannerPath.fromPathFile("RightCenter_Pickup");
-      LeftPickUp_LeftTrench6 = PathPlannerPath.fromPathFile("LeftPickUp_LeftTrench6");
-      LeftTrench_Center26 = PathPlannerPath.fromPathFile("LeftTrench_Center26");
-      LeftCenter_Pickup26 = PathPlannerPath.fromPathFile("LeftCenter_Pickup26");
-      LeftPickUp_LeftTrench26 = PathPlannerPath.fromPathFile("LeftPickUp_LeftTrench26");
-      emptyLeftTrench6 = PathPlannerPath.fromPathFile("emptyLeftTrench6");
-
       addCommands(
-        AutoBuilder.resetOdom(LeftTrench_Center6.getStartingHolonomicPose().get()),
+        AutoBuilder.resetOdom(Paths.LeftTrench_Center6.getStartingHolonomicPose().get()),
         Commands.parallel(
-          AutoBuilder.followPath(emptyLeftTrench6),
+          AutoBuilder.followPath(Paths.emptyLeftTrench6),
           shooter.runRPMCommand(3000).withTimeout(0.05)
         ),
         Commands.race(
-          AutoBuilder.followPath(LeftTrench_Center6), //go to center
+          AutoBuilder.followPath(Paths.LeftTrench_Center6), //go to center
           Commands.sequence(
             Commands.waitSeconds(0.25),
             intakePivot.goDown(), 
@@ -71,7 +57,7 @@ public class Left_Middle2Cycle extends SequentialCommandGroup {
           intake.runVolts(10.8)
         ),
 
-        AutoBuilder.followPath(LeftPickUp_LeftTrench6), //go to shoot position
+        AutoBuilder.followPath(Paths.LeftPickUp_LeftTrench6), //go to shoot position
         Commands.race( //shoot
           superstructure.shoot(),
           Commands.run(() -> turret.turretCameraAimToHub()),
@@ -85,7 +71,7 @@ public class Left_Middle2Cycle extends SequentialCommandGroup {
 
         Commands.parallel(
           Commands.race(
-            AutoBuilder.followPath(LeftTrench_Center26), //go to center
+            AutoBuilder.followPath(Paths.LeftTrench_Center26), //go to center
             hood.runToPositionCommand(0)
           ),
           Commands.sequence(
@@ -93,8 +79,8 @@ public class Left_Middle2Cycle extends SequentialCommandGroup {
             intakePivot.goDown()
           )
         ),
-        AutoBuilder.followPath(LeftCenter_Pickup26).raceWith(intake.runVolts(10.8)), //pickup and intake again
-        AutoBuilder.followPath(LeftPickUp_LeftTrench26), //go to shoot position again
+        AutoBuilder.followPath(Paths.LeftCenter_Pickup26).raceWith(intake.runVolts(10.8)), //pickup and intake again
+        AutoBuilder.followPath(Paths.LeftPickUp_LeftTrench26), //go to shoot position again
         Commands.race( //shoot again
           superstructure.shoot(),
           Commands.run(() -> turret.turretCameraAimToHub()),

@@ -9,6 +9,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.PathPlannerPaths;
 import frc.robot.RobotState;
 import frc.robot.commands.MoveToAngle;
 import frc.robot.commands.factories.Superstructure;
@@ -26,13 +27,6 @@ import frc.robot.subsystems.turret.TurretSubsystem;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class Left_StopAtMiddle extends SequentialCommandGroup {
   /** Creates a new Left_StopAtMiddle. */
-    PathPlannerPath LeftTrench_Center6;
-    PathPlannerPath emptyLeftTrench6;
-    PathPlannerPath LeftPickUp_LeftTrenchMoreCenter;
-    PathPlannerPath LeftTrenchMoreCenter_LeftCenter2;
-    PathPlannerPath LeftCenter_Pickup26;
-
-
   public Left_StopAtMiddle(
       Swerve swerve, 
       RobotState robotState, 
@@ -43,24 +37,19 @@ public class Left_StopAtMiddle extends SequentialCommandGroup {
       FeederSubsystem feeder, 
       SpindexerSubsystem spindexer, 
       HoodSubsystem hood, 
-      Superstructure superstructure
+      Superstructure superstructure, 
+      PathPlannerPaths Paths
     ) 
     {
     try {
-      LeftTrench_Center6 = PathPlannerPath.fromPathFile("LeftTrench_Center6");
-      emptyLeftTrench6 = PathPlannerPath.fromPathFile("emptyLeftTrench6");
-      LeftPickUp_LeftTrenchMoreCenter = PathPlannerPath.fromPathFile("LeftPickUp_LeftTrenchMoreCenter");
-      LeftTrenchMoreCenter_LeftCenter2 = PathPlannerPath.fromPathFile("LeftTrenchMoreCenter_LeftCenter2");
-      LeftCenter_Pickup26 = PathPlannerPath.fromPathFile("LeftCenter_Pickup26");
-
       addCommands(
-        AutoBuilder.resetOdom(LeftTrench_Center6.getStartingHolonomicPose().get()), 
+        AutoBuilder.resetOdom(Paths.LeftTrench_Center6.getStartingHolonomicPose().get()), 
         Commands.parallel(
-          AutoBuilder.followPath(emptyLeftTrench6),
+          AutoBuilder.followPath(Paths.emptyLeftTrench6),
           shooter.runRPMCommand(3000).withTimeout(0.05)
         ),
         Commands.race(
-          AutoBuilder.followPath(LeftTrench_Center6), //go to center
+          AutoBuilder.followPath(Paths.LeftTrench_Center6), //go to center
           Commands.sequence(
             Commands.waitSeconds(0.25),
             intakePivot.goDown(), 
@@ -68,7 +57,7 @@ public class Left_StopAtMiddle extends SequentialCommandGroup {
           ),
           intake.runVolts(10.8)
         ), 
-        AutoBuilder.followPath(LeftPickUp_LeftTrenchMoreCenter), //go to shoot position
+        AutoBuilder.followPath(Paths.LeftPickUp_LeftTrenchMoreCenter), //go to shoot position
         Commands.race( //shoot
           Commands.sequence(
             Commands.waitSeconds(1.0),
@@ -83,7 +72,7 @@ public class Left_StopAtMiddle extends SequentialCommandGroup {
         ), 
         Commands.parallel(
           Commands.race(
-            AutoBuilder.followPath(LeftTrenchMoreCenter_LeftCenter2), //go to center
+            AutoBuilder.followPath(Paths.LeftTrenchMoreCenter_LeftCenter2), //go to center
             hood.runToPositionCommand(0)
           ),
           Commands.sequence(
@@ -92,7 +81,7 @@ public class Left_StopAtMiddle extends SequentialCommandGroup {
           )
         ), 
         Commands.race(
-          AutoBuilder.followPath(LeftCenter_Pickup26), //go to center
+          AutoBuilder.followPath(Paths.LeftCenter_Pickup26), //go to center
           Commands.sequence(
             intakePivot.goDown(), 
             Commands.waitSeconds(5)

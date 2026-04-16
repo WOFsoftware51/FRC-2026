@@ -305,11 +305,11 @@ public class RobotContainer {
         SmartDashboard.putData("Auton", a_chooser);
         a_chooser.setDefaultOption("Do Nothing", 3);
         // a_chooser.addOption("test", 1);
-        a_chooser.addOption("Left_Center (dont run yet unless you wanna yolo)", 2);
+        // a_chooser.addOption("Left_Center (dont run yet unless you wanna yolo)", 2);
         a_chooser.addOption("Do Nothing", 3);
         a_chooser.addOption("Left_StopAtMiddle", 4);
         a_chooser.addOption("Right_StopAtMiddle", 5);
-        a_chooser.addOption("Right_Center (dont run yet)", 6);
+        // a_chooser.addOption("Right_Center (dont run yet)", 6);
         a_chooser.addOption("Right_Middle2Cycle", 7);
         a_chooser.addOption("Left_Middle2Cycle", 8);
 
@@ -328,18 +328,19 @@ public class RobotContainer {
                 return new doNOTHING(swerve);
 
             case 4:
-                return new Left_StopAtMiddle(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure);
+                return new Left_StopAtMiddle(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure, path);
 
             case 5:
-                return new Right_StopAtMiddle(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure);
+                return new Right_StopAtMiddle(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure, path);
                 
             case 6:
                 return new Right_Center(swerve, robotState, shooter, intakePivot, intake, feeder, spindexer, hood, superstructure);
             
             case 7:
                 return new Right_Middle2Cycle(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure, path);
+                
             case 8:
-                return new Left_Middle2Cycle(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure);
+                return new Left_Middle2Cycle(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure, path);
                 
             default:
                 return new Test(swerve, robotState, shooter, intakePivot, intake, feeder, spindexer, hood, superstructure);

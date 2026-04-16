@@ -42,7 +42,6 @@ public class Right_Middle2Cycle extends SequentialCommandGroup {
   {
 
     try {
-
       addCommands(
         AutoBuilder.resetOdom(Paths.RightTrench_Center.getStartingHolonomicPose().get()),
         Commands.parallel(
