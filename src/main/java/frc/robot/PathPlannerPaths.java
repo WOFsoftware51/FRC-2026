@@ -24,6 +24,8 @@ public class PathPlannerPaths {
     public PathPlannerPath LeftPickUp_LeftTrench26;
     public PathPlannerPath LeftTrench_Center26;
     public PathPlannerPath LeftPickUp_LeftTrench6;
+    public PathPlannerPath Middle_Depot;
+    public PathPlannerPath Depot_Shoot;
 
     public PathPlannerPaths() {
         try {
@@ -44,6 +46,8 @@ public class PathPlannerPaths {
             LeftPickUp_LeftTrench26 = PathPlannerPath.fromPathFile("LeftPickUp_LeftTrench26");
             LeftTrench_Center26 = PathPlannerPath.fromPathFile("LeftTrench_Center26");
             LeftPickUp_LeftTrench6 = PathPlannerPath.fromPathFile("LeftPickUp_LeftTrench6");
+            Middle_Depot = PathPlannerPath.fromPathFile("Middle_Depot");
+            Depot_Shoot = PathPlannerPath.fromPathFile("Depot_Shoot");
         }
         catch(Exception e) {
             e.printStackTrace();

@@ -33,6 +33,7 @@ import frc.robot.RobotState.Targets;
 import frc.robot.Autons.Left_Center;
 import frc.robot.Autons.Left_Middle2Cycle;
 import frc.robot.Autons.Left_StopAtMiddle;
+import frc.robot.Autons.Middle_Depot;
 import frc.robot.Autons.Right_Center;
 import frc.robot.Autons.Right_Middle2Cycle;
 import frc.robot.Autons.Right_StopAtMiddle;
@@ -227,10 +228,10 @@ public class RobotContainer {
 
             driver.rightBumper().whileTrue(turret.TurretRunWithVolts(Volts.of(0)));
 
-            test.x().whileTrue(turret.TurretRunWithVolts(Volts.of(3))); //To the left
-            test.b().whileTrue(turret.TurretRunWithVolts(Volts.of(-3))); //To the right
+            test.x().whileTrue(turret.TurretRunWithVolts(Volts.of(4))); //To the left
+            test.b().whileTrue(turret.TurretRunWithVolts(Volts.of(-4))); //To the right
 
-            // test.povDown().whileTrue(turret.resetEncoder());
+            // test.povDown().whileTrue(turrest.resetEncoder());
             test.povDown().whileTrue(turret.TurretToSetpointCommand(Degrees.of(0)));
 
 
@@ -243,6 +244,11 @@ public class RobotContainer {
             operator.y().whileTrue(shooter.treeMapRPMCommand());
             // operator.y().whileTrue(shooter.runRPMCommand());
             
+            operator.leftTrigger()
+                .onTrue(Commands.runOnce(() -> shooter.teleopOffet = 75))
+                .onFalse(Commands.runOnce(() -> shooter.teleopOffet = 0));
+
+
 
         /*
         Hood Controls
@@ -312,6 +318,7 @@ public class RobotContainer {
         // a_chooser.addOption("Right_Center (dont run yet)", 6);
         a_chooser.addOption("Right_Middle2Cycle", 7);
         a_chooser.addOption("Left_Middle2Cycle", 8);
+        a_chooser.addOption("Middle_Depot", 9);
 
     }
 
@@ -341,6 +348,9 @@ public class RobotContainer {
                 
             case 8:
                 return new Left_Middle2Cycle(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure, path);
+                
+            case 9:
+                return new Middle_Depot(swerve, robotState, shooter, turret, intakePivot, intake, feeder, spindexer, hood, superstructure, path);
                 
             default:
                 return new Test(swerve, robotState, shooter, intakePivot, intake, feeder, spindexer, hood, superstructure);

@@ -88,14 +88,14 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     LoggedTunableNumber kV = new LoggedTunableNumber("Pose/DrivekV", 0.11);
     LoggedTunableNumber kA = new LoggedTunableNumber("Pose/DrivekA", 0.0);
 
-    LoggedTunableNumber n1 = new LoggedTunableNumber("PoseVisionMatrix/n1", 0.5);
-    LoggedTunableNumber n2 = new LoggedTunableNumber("PoseVisionMatrix/n2", 0.5);
+    LoggedTunableNumber n1 = new LoggedTunableNumber("PoseVisionMatrix/n1", 1.25);
+    LoggedTunableNumber n2 = new LoggedTunableNumber("PoseVisionMatrix/n2", 1.25);
     LoggedTunableNumber n3 = new LoggedTunableNumber("PoseVisionMatrix/gyro", Double.MAX_VALUE);
 
 
     private double visionTimeStampTurret;
     private double visionTimeStampChassis;
-    private Matrix<N3, N1> visionSTDMatrixTurret = VecBuilder.fill(0.5, 0.5, Double.MAX_VALUE);
+    private Matrix<N3, N1> visionSTDMatrixTurret = VecBuilder.fill(1.25, 1.25, Double.MAX_VALUE);
     private Matrix<N3, N1> visionSTDMatrixChassis = VecBuilder.fill(n1.get(), n2.get(), n3.get());
     // private Matrix<N3, N1> visionSTDMatrix = VecBuilder.fill();
 

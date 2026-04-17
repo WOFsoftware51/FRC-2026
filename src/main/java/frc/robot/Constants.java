@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public final class Constants {
   public static final RobotType robot = Robot.isReal() ? RobotType.ALPHABOT : RobotType.SIMBOT;
-  public static final boolean tuningMode = true;
+  public static final boolean tuningMode = false;
 
   public static final double loopPeriodSecs = 0.02;
   public static final double loopPeriodWatchdogSecs = 0.2;

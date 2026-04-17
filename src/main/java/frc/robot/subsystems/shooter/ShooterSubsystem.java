@@ -23,6 +23,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private InterpolatingDoubleTreeMap treeMapFeed = new InterpolatingDoubleTreeMap();
 
     private double autonOffset = 0;
+    public double teleopOffet = 0;
 
     LoggedTunableNumber shooterRPM = new LoggedTunableNumber("Shooter/speed", 3000);
     
@@ -115,6 +116,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         Logger.recordOutput("Shooter/atRPM", atRPM);
         Logger.recordOutput("Shooter/autonOffset", autonOffset);
+        Logger.recordOutput("Shooter/teleopOffet", teleopOffet);
 
         Logger.recordOutput("Shooter/chassisShootingSpeed", chassisShootingSpeed);
 
@@ -130,6 +132,8 @@ public class ShooterSubsystem extends SubsystemBase {
                         currentTarget
                         +
                         autonOffset
+                        +
+                        teleopOffet
                     ) 
                 );
 
