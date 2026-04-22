@@ -153,6 +153,31 @@ public class ShooterSubsystem extends SubsystemBase {
         
 
     }
+    public Command feeding() {
+        return run(() -> 
+            {
+                io.runVelocityRPM(
+                    RPM.of(
+                        currentTarget
+                    ) 
+                );
+
+
+                if (Math.abs(inputs.targetVelocity.in(RPM) - inputs.currentVelocity.in(RPM)) < 1000) {
+                    atRPM = true;
+                }
+
+            }
+        )
+        .finallyDo(() ->
+            {
+                io.stop();
+                atRPM = false;
+            }
+        );
+        
+
+    }
 
     public Command runRPMCommand() {
         return run(() ->

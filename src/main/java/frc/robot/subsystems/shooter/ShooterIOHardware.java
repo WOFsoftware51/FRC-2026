@@ -26,7 +26,7 @@ public class ShooterIOHardware implements ShooterIO{
     Slot0Configs testSlots = new Slot0Configs();
 
     private VelocityVoltage speed = new VelocityVoltage(0);
-    private double targetVelocity = 0;
+    private double targetVelocity = 3000;
 
 
 

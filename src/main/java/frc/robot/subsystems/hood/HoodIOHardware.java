@@ -73,6 +73,7 @@ public class HoodIOHardware implements HoodIO{
         // cancoder.setPosition(0);
 
         canCoderConfigs.MagnetSensor.withSensorDirection(SensorDirectionValue.CounterClockwise_Positive);
+        canCoderConfigs.MagnetSensor.MagnetOffset = 0.427001953125;
         cancoder.getConfigurator().apply(canCoderConfigs);
 
         updateEncoder();

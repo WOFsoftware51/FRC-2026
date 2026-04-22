@@ -241,7 +241,7 @@ public class RobotContainer {
             new Trigger(() -> shooter.gainsChanged).whileTrue(shooter.updateGainsCommand());
             // operator.rightTrigger().whileTrue(shooter.runRPMCommand());
             operator.rightTrigger().whileTrue(shooter.treeMapRPMCommand());
-            operator.y().whileTrue(shooter.treeMapRPMCommand());
+            operator.y().whileTrue(shooter.feeding());
             // operator.y().whileTrue(shooter.runRPMCommand());
             
             operator.leftTrigger()

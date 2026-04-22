@@ -175,7 +175,7 @@ public final class Constants {
     public static final double kGearRatio = 320.0;
     public static final double kCANCoderGearRatio = 9.0;
 
-    public static final double kCANCoderOffset = -0.329102;
+    public static final double kCANCoderOffset = -0.235596;
 
 
     public static final double kForwardLimit = 21;

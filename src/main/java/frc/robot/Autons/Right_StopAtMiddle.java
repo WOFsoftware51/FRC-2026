@@ -43,11 +43,11 @@ public class Right_StopAtMiddle extends SequentialCommandGroup {
     try {
       addCommands(
         AutoBuilder.resetOdom(Paths.RightTrench_Center.getStartingHolonomicPose().get()), 
-        Commands.parallel(
-          AutoBuilder.followPath(Paths.emptyRightTrench),
-          shooter.runRPMCommand(3000).withTimeout(0.05), 
-          Commands.run(() -> turret.turretCameraAimToHub(), turret).withTimeout(0.02)
-        ),
+        // Commands.parallel(
+        //   AutoBuilder.followPath(Paths.emptyRightTrench),
+        //   shooter.runRPMCommand(3000).withTimeout(0.05), 
+        //   Commands.run(() -> turret.turretCameraAimToHub(), turret).withTimeout(0.02)
+        // ),
         Commands.race(
           AutoBuilder.followPath(Paths.RightTrench_Center), //go to center
           Commands.sequence(
