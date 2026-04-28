@@ -303,6 +303,7 @@ public class TurretSubsystem extends SubsystemBase {
     }
     
     Logger.recordOutput("turretToHubDistance", robotState.getTurretToHub());
+    Logger.recordOutput("turretToHubDistanceFuture", turretToHubDistanceFuture);
 
 
     robotState.setTurretTimeStamp(Timer.getFPGATimestamp(), currentDegrees);

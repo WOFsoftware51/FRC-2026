@@ -85,6 +85,8 @@ public class IntakePivotSubsystem extends SubsystemBase {
 
   public boolean up = false;
 
+  public boolean updateEncoder = false;
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);
@@ -98,9 +100,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
     }
 
 
-    if(inputs.limitSwitchBoolean) {
-      io.updateEncoder();
-    }
+    io.updateEncoder();
 
 
   }

@@ -35,11 +35,11 @@ public class ShooterIOHardware implements ShooterIO{
 
         configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-        configs.Slot0.kP = 0.7;
+        configs.Slot0.kP = 0.8;
         configs.Slot0.kI = 0.0;
-        configs.Slot0.kD = 0.001;
-        configs.Slot0.kV = 0.12909;
-        configs.Slot0.kA = 1.0;
+        configs.Slot0.kD = 0.0;
+        configs.Slot0.kV = 0.1378285714;
+        configs.Slot0.kA = 0.3;
         configs.Slot0.kS = 0.0;
 
         configs.CurrentLimits.StatorCurrentLimitEnable = true;

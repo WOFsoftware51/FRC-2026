@@ -245,7 +245,7 @@ public class RobotContainer {
             // operator.y().whileTrue(shooter.runRPMCommand());
             
             operator.leftTrigger()
-                .onTrue(Commands.runOnce(() -> shooter.teleopOffet = 75))
+                .onTrue(Commands.runOnce(() -> shooter.teleopOffet = 100))
                 .onFalse(Commands.runOnce(() -> shooter.teleopOffet = 0));
 
 

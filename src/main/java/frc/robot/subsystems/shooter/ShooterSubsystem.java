@@ -44,14 +44,13 @@ public class ShooterSubsystem extends SubsystemBase {
     public ShooterSubsystem(ShooterIO io) {
         this.io = io;
 
-        treeMap.put(Inches.of(68.2).in(Meters), 2175.0);
-        treeMap.put(Inches.of(87.4).in(Meters), 2350.0);
-        treeMap.put(Inches.of(107.0).in(Meters), 2600.0);
-        treeMap.put(Inches.of(127.0).in(Meters), 2850.0);
-        treeMap.put(Inches.of(147.6).in(Meters), 3000.0);
-        treeMap.put(Inches.of(166.6).in(Meters), 2900.0);
-        treeMap.put(Inches.of(184.0).in(Meters), 2900.0);
-        treeMap.put(Inches.of(208.0).in(Meters), 2925.0);
+        treeMap.put(Inches.of(53.84).in(Meters), 2250.0);
+        treeMap.put(Inches.of(94.7).in(Meters), 2500.0);
+        treeMap.put(Inches.of(135.5).in(Meters), 2600.0);
+        treeMap.put(Inches.of(173.2).in(Meters), 2900.0);
+        treeMap.put(Inches.of(210.5).in(Meters), 3100.0);
+        treeMap.put(Inches.of(243.75).in(Meters), 3500.0);
+        treeMap.put(Inches.of(280.0).in(Meters), 3900.0);
 
 
         treeMapFeed.put(Meters.of(4.03).in(Meters), 2400.0);
