@@ -92,14 +92,13 @@ public class RobotState {
     InterpolatingDoubleTreeMap timeOfFlight = new InterpolatingDoubleTreeMap();
 
     private RobotState() {
-        timeOfFlight.put(Inches.of(68.2).in(Meters), 0.97);
-        timeOfFlight.put(Inches.of(87.4).in(Meters), 0.65);
-        timeOfFlight.put(Inches.of(107.0).in(Meters), 1.16);
-        timeOfFlight.put(Inches.of(127.0).in(Meters), 1.26);
-        timeOfFlight.put(Inches.of(147.6).in(Meters), 1.4);
-        timeOfFlight.put(Inches.of(166.6).in(Meters), 1.31);
-        timeOfFlight.put(Inches.of(184.0).in(Meters), 1.37);
-        // timeOfFlight.put(Inches.of(208.0).in(Meters), 1.30);
+        timeOfFlight.put(Inches.of(53.84).in(Meters), 0.98);//
+        timeOfFlight.put(Inches.of(94.7).in(Meters), 1.04);//
+        timeOfFlight.put(Inches.of(135.5).in(Meters), 1.03);//
+        timeOfFlight.put(Inches.of(173.2).in(Meters), 1.11);//
+        timeOfFlight.put(Inches.of(210.5).in(Meters), 1.09);//
+        timeOfFlight.put(Inches.of(243.75).in(Meters), 1.19);
+        timeOfFlight.put(Inches.of(280.0).in(Meters), 1.22);
     }
 
     public static enum Targets {

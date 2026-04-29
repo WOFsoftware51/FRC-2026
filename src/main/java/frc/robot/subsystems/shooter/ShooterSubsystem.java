@@ -44,11 +44,11 @@ public class ShooterSubsystem extends SubsystemBase {
     public ShooterSubsystem(ShooterIO io) {
         this.io = io;
 
-        treeMap.put(Inches.of(53.84).in(Meters), 2250.0);
-        treeMap.put(Inches.of(94.7).in(Meters), 2500.0);
-        treeMap.put(Inches.of(135.5).in(Meters), 2600.0);
-        treeMap.put(Inches.of(173.2).in(Meters), 2900.0);
-        treeMap.put(Inches.of(210.5).in(Meters), 3100.0);
+        treeMap.put(Inches.of(53.84).in(Meters), 2250.0);//
+        treeMap.put(Inches.of(94.7).in(Meters), 2500.0);//
+        treeMap.put(Inches.of(135.5).in(Meters), 2600.0);//
+        treeMap.put(Inches.of(173.2).in(Meters), 2900.0);//
+        treeMap.put(Inches.of(210.5).in(Meters), 3100.0);//
         treeMap.put(Inches.of(243.75).in(Meters), 3500.0);
         treeMap.put(Inches.of(280.0).in(Meters), 3900.0);
 
@@ -95,7 +95,7 @@ public class ShooterSubsystem extends SubsystemBase {
         }
 
         if(DriverStation.isAutonomous()) {
-            autonOffset = 50;
+            autonOffset = 0; //50;
         }
         else {
             autonOffset = 0;
