@@ -57,7 +57,7 @@ public class Left_StopAtMiddle extends SequentialCommandGroup {
           ),
           intake.runVolts(10.8)
         ), 
-        AutoBuilder.followPath(Paths.LeftPickUp_LeftTrenchMoreCenter), //go to shoot position
+        AutoBuilder.followPath(Paths.LeftPickUp_LeftTrenchMoreCenter6), //go to shoot position
         Commands.race( //shoot
           Commands.sequence(
             Commands.waitSeconds(1.0),
@@ -81,7 +81,7 @@ public class Left_StopAtMiddle extends SequentialCommandGroup {
           )
         ), 
         Commands.race(
-          AutoBuilder.followPath(Paths.LeftCenter_Pickup26), //go to center
+          AutoBuilder.followPath(Paths.LeftCenter_Pickup2), //go to center
           Commands.sequence(
             intakePivot.goDown(), 
             Commands.waitSeconds(5)

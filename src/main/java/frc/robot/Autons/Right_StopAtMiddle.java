@@ -57,7 +57,7 @@ public class Right_StopAtMiddle extends SequentialCommandGroup {
           ),
           intake.runVolts(10.8)
         ), 
-        AutoBuilder.followPath(Paths.RightPickUp_RightTrenchMoreCenter), //go to shoot position
+        AutoBuilder.followPath(Paths.RightPickUp_RightTrenchMoreCenter6), //go to shoot position
         Commands.race( //shoot
           Commands.sequence(
             Commands.waitSeconds(1.0),

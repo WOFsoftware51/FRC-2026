@@ -43,13 +43,13 @@ public class Right_Middle2Cycle extends SequentialCommandGroup {
 
     try {
       addCommands(
-        AutoBuilder.resetOdom(Paths.RightTrench_Center.getStartingHolonomicPose().get()),
+        AutoBuilder.resetOdom(Paths.RightTrench_Center6.getStartingHolonomicPose().get()),
         Commands.parallel(
           AutoBuilder.followPath(Paths.emptyRightTrench),
           shooter.runRPMCommand(3000).withTimeout(0.05)
         ),
         Commands.race(
-          AutoBuilder.followPath(Paths.RightTrench_Center), //go to center
+          AutoBuilder.followPath(Paths.RightTrench_Center6), //go to center
           Commands.sequence(
             Commands.waitSeconds(0.25),
             intakePivot.goDown(), 
@@ -58,7 +58,7 @@ public class Right_Middle2Cycle extends SequentialCommandGroup {
           intake.runVolts(10.8)
         ),
         // AutoBuilder.followPath(RightCenter_Pickup).raceWith(intake.runVolts(10.8)), //pickup and intake
-        AutoBuilder.followPath(Paths.RightPickUp_RightTrench), //go to shoot position
+        AutoBuilder.followPath(Paths.RightPickUp_RightTrench6), //go to shoot position
         Commands.race( //shoot
           superstructure.shoot(),
           Commands.run(() -> turret.turretCameraAimToHub()),
@@ -72,16 +72,14 @@ public class Right_Middle2Cycle extends SequentialCommandGroup {
 
         Commands.parallel(
           Commands.race(
-            AutoBuilder.followPath(Paths.RightTrench_Center2), //go to center
+            AutoBuilder.followPath(Paths.RightCenter_Pickup26).raceWith(intake.runVolts(10.56)), //center, pickup and intake again
             hood.runToPositionCommand(0)
           ),
           Commands.sequence(
             Commands.waitSeconds(0.5),
             intakePivot.goDown()
-          )
+          ).withTimeout(5)
         ),
-        AutoBuilder.followPath(Paths.RightCenter_Pickup2).raceWith(intake.runVolts(10.56)), //pickup and intake again
-        AutoBuilder.followPath(Paths.RightPickUp_RightTrench2), //go to shoot position again
         Commands.race( //shoot again
           superstructure.shoot(),
           Commands.run(() -> turret.turretCameraAimToHub()),

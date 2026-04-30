@@ -65,22 +65,20 @@ public class Left_Middle2Cycle extends SequentialCommandGroup {
             Commands.waitSeconds(2.5), 
             intakePivot.bounce().alongWith(intake.runVolts(6))
           ),
-          Commands.waitSeconds(5)
+          Commands.waitSeconds(4)
         ), 
 
 
         Commands.parallel(
           Commands.race(
-            AutoBuilder.followPath(Paths.LeftTrench_Center26), //go to center
+            AutoBuilder.followPath(Paths.LeftCenter_Pickup26).raceWith(intake.runVolts(10.8)), //center, pickup and intake again
             hood.runToPositionCommand(0)
           ),
           Commands.sequence(
             Commands.waitSeconds(0.5),
             intakePivot.goDown()
-          )
+          ).withTimeout(5)
         ),
-        AutoBuilder.followPath(Paths.LeftCenter_Pickup26).raceWith(intake.runVolts(10.8)), //pickup and intake again
-        AutoBuilder.followPath(Paths.LeftPickUp_LeftTrench26), //go to shoot position again
         Commands.race( //shoot again
           superstructure.shoot(),
           Commands.run(() -> turret.turretCameraAimToHub()),
